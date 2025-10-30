@@ -1,107 +1,3794 @@
 <!DOCTYPE html>
 <html lang="en">
 
+  <head>
+    <meta charset="UTF-8">
+    <title>Untitled</title>
+    
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
+<html lang="en">
 <head>
- <meta charset="UTF-8">
- <meta http-equiv="X-UA-Compatible" content="IE=edge">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Fum.studio</title>
- <link rel="stylesheet" el="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
- <style>
- @keyframes fadein {
- 0% {
- opacity: 0;
- }
- 100% {
- opacity: 1;
- }
- }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adventure Trip Planner</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #3498db;
+            --secondary: #2c3e50;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --public: #2ecc71;
+            --private: #e74c3c;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        /* Desktop: Day card layout - image left, details right */
+        @media (min-width: 1024px) {
+            .trip-day {
+                display: grid;
+                grid-template-areas: 
+                    "header header"
+                    "image details"
+                    "gallery gallery";
+                grid-template-columns: 1fr 1fr;
+                gap: 0;
+            }
+            
+            .day-header {
+                grid-area: header;
+            }
+            
+            .main-image-container {
+                grid-area: image;
+                height: 300px;
+                border-radius: 0 0 0 10px;
+            }
+            
+            .trip-details {
+                grid-area: details;
+                padding: 20px;
+                border-radius: 0 0 10px 0;
+            }
+            
+            .image-gallery {
+                grid-area: gallery;
+                border-radius: 0 0 10px 10px;
+            }
+            
+            /* Keep the day card rounded corners */
+            .trip-day {
+                border-radius: 10px;
+                overflow: hidden;
+            }
+        }
+        
+        .trip-planner-header {
+            background: var(--secondary);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            filter: blur(8px);
+            opacity: 0.3;
+            z-index: 1;
+        }
+        
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .header-photo-container {
+            width: 300px;
+            height: 300px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .header-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .header-photo:hover {
+            transform: scale(1.05);
+        }
+        
+        .change-photo-btn {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .change-photo-btn:hover {
+            background: rgba(0, 0, 0, 0.9);
+            transform: scale(1.05);
+        }
+        
+        .header-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .trip-title {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .trip-title:hover {
+            color: var(--primary);
+        }
+        
+        .trip-subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .trip-subtitle:hover {
+            color: var(--primary);
+        }
+        
+        .trip-meta {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .meta-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            min-width: 150px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .meta-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+        
+        .meta-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+        
+        .meta-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .trip-locations {
+            margin-top: 1rem;
+        }
+        
+        .locations-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .locations-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .location-tag {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .location-tag:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .add-location {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .edit-header-btn {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 1rem;
+        }
+        
+        .edit-header-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .trip-controls {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 30px 0;
+        }
+        
+        .control-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+        
+        .trip-days {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 10px 0 30px;
+        }
+        
+        .trip-day {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            flex: 1 1 calc(33.333% - 20px);
+            min-width: 300px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+        
+        .trip-day:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .day-header {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .day-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .day-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        
+        .trip-date {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .day-location {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 5px;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .main-image-container {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
+        }
+        
+        .main-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .main-image:hover {
+            transform: scale(1.05);
+        }
+        
+        .image-upload-btn {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .image-upload-btn:hover {
+            background: rgba(0, 0, 0, 0.9);
+            transform: scale(1.1);
+        }
+        
+        .image-gallery {
+            display: flex;
+            padding: 10px;
+            gap: 8px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
+            min-height: 80px;
+            flex-wrap: wrap;
+        }
+        
+        .gallery-thumb-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .gallery-thumb {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 5px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .gallery-thumb:hover {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+        
+        .gallery-thumb.active {
+            opacity: 1;
+            border-color: var(--primary);
+        }
+        
+        .delete-photo-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 1;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .delete-photo-btn:hover {
+            background: #c0392b;
+            transform: scale(1.1);
+        }
+        
+        .add-photo-placeholder {
+            width: 60px;
+            height: 60px;
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .add-photo-placeholder:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        /* Desktop: Square gallery thumbs - KEEP MAIN IMAGE SAME SIZE */
+        @media (min-width: 1024px) {
+            /* Square Gallery Thumbs Only */
+            .gallery-thumb {
+                width: 80px;
+                height: 80px;
+                object-fit: cover;
+            }
+            
+            .image-gallery {
+                gap: 10px;
+                padding: 15px;
+            }
+            
+            .add-photo-placeholder {
+                width: 80px;
+                height: 80px;
+            }
+            
+            /* MAIN IMAGE STAYS THE SAME SIZE - REMOVED SQUARE TRANSFORMATION */
+            .main-image-container {
+                /* Keep original size - don't make it square */
+                height: 250px;
+                padding-bottom: 0;
+            }
+            
+            .main-image {
+                /* Keep original positioning */
+                position: static;
+                width: 100%;
+                height: 100%;
+            }
+            
+            .image-upload-btn {
+                z-index: 10;
+            }
+            
+            .edit-day-btn {
+                z-index: 10;
+            }
+            
+            /* Single Day Layout - Small container aligned to left */
+            .trip-days.single-day {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+                justify-content: flex-start; /* Align to left instead of center */
+            }
+            
+            .trip-days.single-day .trip-day {
+                flex: 0 1 calc(33.333% - 20px); /* Don't grow, only shrink */
+                min-width: 300px;
+                max-width: calc(33.333% - 20px); /* Limit maximum width */
+                display: block; /* Reset grid display */
+                margin: 0; /* Remove any extra margins */
+            }
+            
+            /* Reset all single-day specific styles to maintain original layout */
+            .trip-days.single-day .day-header,
+            .trip-days.single-day .main-image-container,
+            .trip-days.single-day .image-gallery,
+            .trip-days.single-day .trip-details {
+                grid-column: auto;
+                border-radius: 0;
+                border: none;
+                background: transparent;
+                padding: 20px;
+            }
+            
+            .trip-days.single-day .time-info {
+                flex-direction: row;
+                gap: 0;
+            }
+            
+            .trip-days.single-day .time-item {
+                text-align: center;
+                display: block;
+                padding-bottom: 0;
+                border-bottom: none;
+            }
+            
+            .trip-days.single-day .time-label {
+                font-weight: normal;
+                color: #666;
+            }
+            
+            .trip-days.single-day .time-value {
+                font-size: 1.1rem;
+                color: #333;
+            }
+            
+            .trip-days.single-day .trip-highlights {
+                margin: 15px 0;
+            }
+            
+            .trip-days.single-day .trip-highlights h3 {
+                color: var(--secondary);
+                font-size: 1.2rem;
+                margin-bottom: 10px;
+                padding-bottom: 0;
+                border-bottom: none;
+            }
+            
+            .trip-days.single-day .day-selector {
+                margin-top: 15px;
+                padding-top: 0;
+                border-top: none;
+                background: transparent;
+                padding: 0;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            
+            .trip-days.single-day .day-checkbox {
+                transform: scale(1);
+                margin-right: 10px;
+            }
+            
+            .trip-days.single-day .day-label {
+                font-size: 1rem;
+                color: #333;
+            }
+        }
+        
+        .trip-details {
+            padding: 20px;
+        }
+        
+        .time-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .time-item {
+            text-align: center;
+        }
+        
+        .time-label {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .time-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .trip-highlights {
+            margin: 15px 0;
+        }
+        
+        .trip-highlights h3 {
+            margin-bottom: 10px;
+            color: var(--secondary);
+        }
+        
+        .trip-highlights ul {
+            padding-left: 20px;
+        }
+        
+        .trip-highlights li {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .highlight-text {
+            flex: 1;
+        }
+        
+        .edit-highlight {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        
+        .day-selector {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+        }
+        
+        .day-checkbox {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        
+        .day-label {
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .edit-day-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--dark);
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .edit-day-btn:hover {
+            background: white;
+            transform: scale(1.05);
+        }
+        
+        footer {
+            background: var(--secondary);
+            color: white;
+            padding: 30px 0;
+            margin-top: 30px;
+        }
+        
+        .booking-summary {
+            background: white;
+            color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .booking-summary h2 {
+            margin-bottom: 15px;
+            color: var(--secondary);
+        }
+        
+        .selected-days {
+            margin-bottom: 15px;
+        }
+        
+        .total-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-align: right;
+        }
+        
+        .book-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--accent) 0%, #c0392b 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .book-btn:hover {
+            background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
 
- @keyframes connect {
- 0% {
- transform: translateY(-50px);
- }
- 100% {
- transform: translateY(0);
- }
- }
+        /* Modal content - responsive design */
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
 
- .content {
- text-align: center;
- display: none;
- }
+        /* Mobile styles (default) */
+        .modal-content {
+            width: 95%;
+            padding: 20px;
+            margin: 10px;
+        }
 
- .content.show {
- display: block;
- animation: fadein 1s forwards;
- }
+        /* Tablet styles */
+        @media (min-width: 768px) {
+            .modal-content {
+                width: 85%;
+                padding: 25px;
+                margin: 20px;
+            }
+        }
 
- .gift {
- font-size: 50px;
- opacity: 0;
- transition: opacity 1s, transform 1s;
- }
+        /* Desktop styles */
+        @media (min-width: 1024px) {
+            .modal-content {
+                width: 70%;
+                max-width: 600px;
+                padding: 30px;
+                margin: 30px;
+            }
+        }
 
- 
+        /* Large desktop styles */
+        @media (min-width: 1440px) {
+            .modal-content {
+                width: 60%;
+                max-width: 700px;
+                padding: 35px;
+            }
+        }
 
- .content.show {
- display: block;
- animation: fadein 1s forwards;
- }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--secondary);
+        }
+        
+        .close-modal {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .close-modal:hover {
+            color: var(--accent);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .time-inputs {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .time-inputs .form-group {
+            flex: 1;
+        }
+        
+        .highlights-list {
+            margin-top: 10px;
+        }
+        
+        .highlight-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .highlight-item input {
+            flex: 1;
+        }
+        
+        .remove-highlight {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            width: 30px;
+            cursor: pointer;
+        }
+        
+        .add-highlight {
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        
+        .locations-edit {
+            margin-top: 10px;
+        }
+        
+        .location-edit-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .location-edit-item input {
+            flex: 1;
+        }
+        
+        .add-location-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        /* Cropper Modal Styles */
+        .cropper-modal-content {
+            max-width: 800px;
+            width: 95%;
+            padding: 20px;
+        }
+        
+        .cropper-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .cropper-preview-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .cropper-wrapper {
+            width: 100%;
+            max-height: 400px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        
+        #cropperImage {
+            max-width: 100%;
+            max-height: 380px;
+        }
+        
+        .cropper-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .cropper-actions .btn {
+            flex: 1;
+        }
+        
+        /* Photo Selection Modal */
+        .photo-selection-modal {
+            max-width: 900px;
+        }
+        
+        .available-photos-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .available-photos-title {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .available-photos-list {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        
+        .available-photo {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .available-photo:hover {
+            transform: scale(1.05);
+            border-color: var(--primary);
+        }
+        
+        .photo-name {
+            font-size: 0.8rem;
+            text-align: center;
+            margin-top: 5px;
+            color: #666;
+            max-width: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        /* Public/Private Options */
+        .privacy-options {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .privacy-option {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .privacy-option:hover {
+            border-color: var(--primary);
+        }
+        
+        .privacy-option.selected {
+            border-color: var(--primary);
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .privacy-option.public.selected {
+            border-color: var(--public);
+            background-color: rgba(46, 204, 113, 0.1);
+        }
+        
+        .privacy-option.private.selected {
+            border-color: var(--private);
+            background-color: rgba(231, 76, 60, 0.1);
+        }
+        
+        .privacy-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .privacy-option.public .privacy-icon {
+            color: var(--public);
+        }
+        
+        .privacy-option.private .privacy-icon {
+            color: var(--private);
+        }
+        
+        .privacy-label {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .privacy-description {
+            font-size: 0.85rem;
+            color: #666;
+            text-align: center;
+        }
+        
+        .privacy-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .privacy-badge.public {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: var(--public);
+        }
+        
+        .privacy-badge.private {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: var(--private);
+        }
+        
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+            }
+            
+            .header-photo-container {
+                width: 100%;
+                max-width: 300px;
+                margin: 0 auto;
+            }
+            
+            .trip-day {
+                flex: 1 1 100%;
+            }
+            
+            .image-gallery {
+                justify-content: center;
+            }
+            
+            .control-buttons {
+                justify-content: center;
+            }
+            
+            .time-inputs {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .trip-meta {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .trip-title {
+                font-size: 2rem;
+            }
+            
+            .cropper-container {
+                flex-direction: column;
+            }
+            
+            .cropper-actions {
+                flex-direction: column;
+            }
+            
+            .privacy-options {
+                flex-direction: column;
+            }
+        }
 
- .gift {
- font-size: 50px;
- opacity: 0;
- transition: opacity 1s, transform 1s;
- }
+        /* Upload Progress Styles */
+        .upload-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: #e0e0e0;
+            z-index: 9999;
+            display: none;
+        }
 
+        .upload-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            width: 0%;
+            transition: width 0.3s ease;
+            position: relative;
+        }
 
- h1 {
- font-family: Arial, sans-serif;
- font-size: 28px;
- margin-top: -7px;
- opacity: 0;
- transition: opacity 1s, transform 1s;
- }
+        .upload-progress-text {
+            position: absolute;
+            top: 8px;
+            right: 20px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 5px 10px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
 
- .content.show .gift {
- opacity: 1;
- animation: connect 1s forwards;
- }
+        /* Alert Styles */
+        .alert {
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            display: none;
+            animation: fadeIn 0.5s;
+            border-left: 5px solid;
+        }
 
- .content.show h1 {
- opacity: 1;
- animation: connect 1s forwards;
- }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
- body {
- background-color: #f5f5f5;
- display: flex;
- flex-direction: column;
- justify-content: center;
- align-items: center;
- height: 100vh;
- margin: 0;
- }
- </style>
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border-left-color: #28a745;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left-color: #dc3545;
+        }
+
+        /* Language and Button Options Styles */
+        .language-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .language-selector label {
+            font-weight: 600;
+            color: white;
+        }
+
+        .language-selector select {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+        }
+
+        .button-options {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .button-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .button-option input {
+            width: 18px;
+            height: 18px;
+        }
+
+        .button-option label {
+            color: white;
+            cursor: pointer;
+        }
+
+        .footer-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .schedule-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .schedule-btn:hover {
+            background: linear-gradient(135deg, #2980b9 0%, #21618c 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
 </head>
-
 <body>
- <div class="content">
-    <i class="gift fas fa-gift"></i>
- <h1>Fum.studio</h1>
+    <!-- Upload Progress Bar -->
+    <div class="upload-progress" id="upload-progress">
+        <div class="upload-progress-bar" id="upload-progress-bar">
+            <div class="upload-progress-text" id="upload-progress-text">0%</div>
+        </div>
+    </div>
 
- </div>
+    <!-- Alert Container -->
+    <div class="container">
+        <div class="alert alert-success" id="success-alert">
+            <i class="fas fa-check-circle"></i> <span id="success-alert-message">Operation completed successfully</span>
+        </div>
 
- <script>
- setTimeout(function(){
- document.querySelector('.content').classList.add('show');
- }, 1000); // Show content after 1 second
+        <div class="alert alert-danger" id="error-alert">
+            <i class="fas fa-exclamation-circle"></i> <span id="error-message"></span>
+        </div>
+    </div>
 
- setTimeout(function(){
- window.location.href = "catalog.html";
- }, 3000); // Redirect after 3 seconds
- </script>
+    <header class="trip-planner-header">
+        <div class="header-background" id="headerBackground"></div>
+        <div class="header-container">
+            <div class="header-photo-container">
+                <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" 
+                     alt="Mountain Adventure" class="header-photo" id="headerPhoto">
+                <button class="change-photo-btn" id="changeHeaderPhotoBtn">
+                    <i class="fas fa-camera"></i> Change Photo
+                </button>
+            </div>
+            
+            <div class="header-details">
+                <div>
+                    <h1 class="trip-title" id="tripTitle">Mountain Adventure Expedition</h1>
+                    <p class="trip-subtitle" id="tripSubtitle">Explore breathtaking landscapes over 3 amazing days</p>
+                </div>
+                
+                <div class="trip-meta">
+                    <div class="meta-item" id="durationItem">
+                        <div class="meta-label">Trip Duration</div>
+                        <div class="meta-value">3 Days</div>
+                    </div>
+                    <div class="meta-item" id="difficultyItem">
+                        <div class="meta-label">Difficulty Level</div>
+                        <div class="meta-value">Moderate</div>
+                    </div>
+                    <div class="meta-item" id="groupSizeItem">
+                        <div class="meta-label">Group Size</div>
+                        <div class="meta-value">Up to 12 People</div>
+                    </div>
+                    <div class="meta-item" id="privacyItem">
+                        <div class="meta-label">Trip Privacy</div>
+                        <div class="meta-value">Public</div>
+                    </div>
+                </div>
+                
+                <div class="trip-locations">
+                    <h3 class="locations-title">
+                        <i class="fas fa-map-marker-alt"></i> Trip Locations
+                    </h3>
+                    <div class="locations-list" id="locationsList">
+                        <!-- Locations will be dynamically added here -->
+                    </div>
+                </div>
+                
+                <button class="edit-header-btn" id="editHeaderBtn">
+                    <i class="fas fa-edit"></i> Edit Header Details
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container">
+        <div class="trip-controls">
+            <h2>Trip Management</h2>
+            <div class="control-buttons">
+                <button class="btn btn-primary" id="addDayBtn">
+                    <i class="fas fa-plus"></i> Add New Day
+                </button>
+                <button class="btn btn-success" id="saveTripBtn">
+                    <i class="fas fa-save"></i> Save Trip
+                </button>
+                <button class="btn btn-warning" id="resetTripBtn">
+                    <i class="fas fa-undo"></i> Reset Changes
+                </button>
+                <button class="btn btn-danger" id="clearTripBtn">
+                    <i class="fas fa-trash"></i> Clear All
+                </button>
+            </div>
+        </div>
+        
+        <div class="trip-days" id="tripDaysContainer">
+            <!-- Days will be dynamically added here -->
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <div class="booking-summary">
+                <h2>Your Trip Selection</h2>
+                <div class="selected-days" id="selectedDays">
+                    <!-- Selected days will be displayed here -->
+                </div>
+                <div class="total-price" id="totalPrice">
+                    Total: $0
+                </div>
+            </div>
+            <div class="footer-buttons" id="footerButtons">
+                <button class="book-btn">Book Your Adventure Now</button>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Edit Day Modal -->
+    <div class="modal" id="editDayModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Trip Day</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <form id="editDayForm">
+                <input type="hidden" id="editDayId">
+                
+                <div class="form-group">
+                    <label for="editDayTitle">Day Title</label>
+                    <input type="text" id="editDayTitle" class="form-control" placeholder="E.g., Day 1: Mountain Base Exploration">
+                </div>
+                
+                <div class="form-group">
+                    <label for="editDayLocation">Location</label>
+                    <input type="text" id="editDayLocation" class="form-control" placeholder="Enter location for this day">
+                </div>
+                
+                <div class="form-group">
+                    <label for="editDayDate">Trip Date</label>
+                    <input type="date" id="editDayDate" class="form-control">
+                </div>
+                
+                <div class="form-group">
+                    <label for="editDayPrice">Price ($)</label>
+                    <input type="number" id="editDayPrice" class="form-control" min="0" step="10">
+                </div>
+                
+                <div class="form-group">
+                    <label for="editDayDescription">Description</label>
+                    <textarea id="editDayDescription" class="form-control" rows="3" placeholder="Describe this day of the trip"></textarea>
+                </div>
+                
+                <div class="time-inputs">
+                    <div class="form-group">
+                        <label for="editStartTime">Start Time</label>
+                        <input type="time" id="editStartTime" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="editEndTime">End Time</label>
+                        <input type="time" id="editEndTime" class="form-control">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Day Privacy</label>
+                    <div class="privacy-options">
+                        <div class="privacy-option public" data-value="public">
+                            <i class="fas fa-globe privacy-icon"></i>
+                            <div class="privacy-label">Public</div>
+                            <div class="privacy-description">Visible to everyone</div>
+                        </div>
+                        <div class="privacy-option private" data-value="private">
+                            <i class="fas fa-lock privacy-icon"></i>
+                            <div class="privacy-label">Private</div>
+                            <div class="privacy-description">Only visible to you</div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="editDayPrivacy" value="public">
+                </div>
+                
+                <div class="form-group">
+                    <label>Trip Highlights</label>
+                    <div class="highlights-list" id="highlightsList">
+                        <!-- Highlights will be added here dynamically -->
+                    </div>
+                    <button type="button" class="add-highlight" id="addHighlightBtn">
+                        <i class="fas fa-plus"></i> Add Highlight
+                    </button>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-danger" id="deleteDayBtn">Delete Day</button>
+                    <button type="button" class="btn btn-warning" id="cancelEditBtn">Cancel</button>
+                    <button type="submit" class="btn btn-success">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Edit Header Modal -->
+    <div class="modal" id="editHeaderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Trip Header</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <form id="editHeaderForm">
+                <div class="form-group">
+                    <label for="editTripTitle">Trip Title</label>
+                    <input type="text" id="editTripTitle" class="form-control" value="Mountain Adventure Expedition">
+                </div>
+                
+                <div class="form-group">
+                    <label for="editTripSubtitle">Trip Subtitle</label>
+                    <input type="text" id="editTripSubtitle" class="form-control" value="Explore breathtaking landscapes over 3 amazing days">
+                </div>
+                
+                <div class="form-group">
+                    <label for="editTripDuration">Trip Duration</label>
+                    <input type="text" id="editTripDuration" class="form-control" value="3 Days">
+                </div>
+                
+                <div class="form-group">
+                    <label for="editDifficulty">Difficulty Level</label>
+                    <select id="editDifficulty" class="form-control">
+                        <option value="Easy">Easy</option>
+                        <option value="Moderate" selected>Moderate</option>
+                        <option value="Challenging">Challenging</option>
+                        <option value="Difficult">Difficult</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editGroupSize">Group Size</label>
+                    <input type="text" id="editGroupSize" class="form-control" value="Up to 12 People">
+                </div>
+                
+                <div class="form-group">
+                    <label>Trip Privacy</label>
+                    <div class="privacy-options">
+                        <div class="privacy-option public" data-value="public">
+                            <i class="fas fa-globe privacy-icon"></i>
+                            <div class="privacy-label">Public</div>
+                            <div class="privacy-description">Visible to everyone</div>
+                        </div>
+                        <div class="privacy-option private" data-value="private">
+                            <i class="fas fa-lock privacy-icon"></i>
+                            <div class="privacy-label">Private</div>
+                            <div class="privacy-description">Only visible to you</div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="editTripPrivacy" value="public">
+                </div>
+                
+                <div class="form-group">
+                    <label for="editTripLanguage">Trip Language</label>
+                    <select id="editTripLanguage" class="form-control">
+                        <option value="English" selected>English</option>
+                        <option value="Spanish">Spanish</option>
+                        <option value="French">French</option>
+                        <option value="German">German</option>
+                        <option value="Italian">Italian</option>
+                        <option value="Chinese">Chinese</option>
+                        <option value="Japanese">Japanese</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="showBookNow" checked>
+                        <span class="checkbox-custom"></span>
+                        Show "Book Now" Button
+                    </label>
+                </div>
+                
+                <div class="form-group" id="bookNowLinkGroup">
+                    <label for="bookNowLink">Book Now Link</label>
+                    <input type="text" id="bookNowLink" class="form-control" placeholder="Enter URL for booking page">
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="showSchedule" checked>
+                        <span class="checkbox-custom"></span>
+                        Show "Schedule Trip" Button
+                    </label>
+                </div>
+                
+                <div class="form-group" id="scheduleLinkGroup">
+                    <label for="scheduleLink">Schedule Trip Link</label>
+                    <input type="text" id="scheduleLink" class="form-control" placeholder="Enter URL for scheduling page">
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-warning" id="cancelHeaderEditBtn">Cancel</button>
+                    <button type="submit" class="btn btn-success">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Cropper Modal -->
+    <div class="modal" id="cropperModal">
+        <div class="modal-content cropper-modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Crop Image to Square</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="cropper-container">
+                <div class="cropper-preview-container">
+                    <div class="cropper-wrapper">
+                        <img id="cropperImage" src="" alt="Image to crop">
+                    </div>
+                </div>
+                <div class="cropper-actions">
+                    <button type="button" class="btn btn-warning" id="cancelCropBtn">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button type="button" class="btn btn-success" id="cropImageBtn">
+                        <i class="fas fa-crop"></i> Crop Image
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Photo Selection Modal -->
+    <div class="modal" id="photoSelectionModal">
+        <div class="modal-content photo-selection-modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Select a Photo</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="available-photos-section">
+                <h4 class="available-photos-title">
+                    <i class="fas fa-images"></i> Available Photos
+                </h4>
+                <div class="available-photos-list" id="availablePhotosList">
+                    <!-- Available photos will be dynamically added here -->
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-warning" id="cancelPhotoSelectionBtn">Cancel</button>
+                <button type="button" class="btn btn-primary" id="uploadNewPhotoBtn">
+                    <i class="fas fa-upload"></i> Upload New Photo
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- File Input for Image Upload -->
+    <input type="file" id="imageUploadInput" class="file-input" accept="image/*">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getDatabase, ref, get, set, update, remove, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+    import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyBDrzrgLslaJvnXbo1e90irCEtdcm9ZsCU",
+        authDomain: "logins-13661.firebaseapp.com",
+        databaseURL: "https://logins-13661-default-rtdb.firebaseio.com",
+        projectId: "logins-13661",
+        storageBucket: "logins-13661.appspot.com",
+        messagingSenderId: "451535349483",
+        appId: "1:451535349483:web:d3c9867fd2bffbbdca40ae",
+        measurementId: "G-DWP16WX2H7"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const storage = getStorage(app);
+
+    // DOM Elements
+    const tripDaysContainer = document.getElementById('tripDaysContainer');
+    const selectedDaysElement = document.getElementById('selectedDays');
+    const totalPriceElement = document.getElementById('totalPrice');
+    const editDayModal = document.getElementById('editDayModal');
+    const editHeaderModal = document.getElementById('editHeaderModal');
+    const cropperModal = document.getElementById('cropperModal');
+    const photoSelectionModal = document.getElementById('photoSelectionModal');
+    const editDayForm = document.getElementById('editDayForm');
+    const editHeaderForm = document.getElementById('editHeaderForm');
+    const imageUploadInput = document.getElementById('imageUploadInput');
+    const locationsList = document.getElementById('locationsList');
+    const headerBackground = document.getElementById('headerBackground');
+    const availablePhotosList = document.getElementById('availablePhotosList');
+    const successAlert = document.getElementById('success-alert');
+    const errorAlert = document.getElementById('error-alert');
+    const errorMessage = document.getElementById('error-message');
+    const successAlertMessage = document.getElementById('success-alert-message');
+    const uploadProgress = document.getElementById('upload-progress');
+    const uploadProgressBar = document.getElementById('upload-progress-bar');
+    const uploadProgressText = document.getElementById('upload-progress-text');
+    const footerButtons = document.getElementById('footerButtons');
+    
+    // Button link elements
+    const bookNowLinkGroup = document.getElementById('bookNowLinkGroup');
+    const scheduleLinkGroup = document.getElementById('scheduleLinkGroup');
+    const bookNowLink = document.getElementById('bookNowLink');
+    const scheduleLink = document.getElementById('scheduleLink');
+    
+    // Cropper elements
+    const cropperImage = document.getElementById('cropperImage');
+    const cancelCropBtn = document.getElementById('cancelCropBtn');
+    const cropImageBtn = document.getElementById('cropImageBtn');
+    
+    // Photo selection elements
+    const cancelPhotoSelectionBtn = document.getElementById('cancelPhotoSelectionBtn');
+    const uploadNewPhotoBtn = document.getElementById('uploadNewPhotoBtn');
+    
+    // Header elements
+    const headerPhoto = document.getElementById('headerPhoto');
+    const changeHeaderPhotoBtn = document.getElementById('changeHeaderPhotoBtn');
+    const tripTitleElement = document.getElementById('tripTitle');
+    const tripSubtitleElement = document.getElementById('tripSubtitle');
+    const durationItem = document.getElementById('durationItem');
+    const difficultyItem = document.getElementById('difficultyItem');
+    const groupSizeItem = document.getElementById('groupSizeItem');
+    const privacyItem = document.getElementById('privacyItem');
+    const editHeaderBtn = document.getElementById('editHeaderBtn');
+    
+    // Control buttons
+    const addDayBtn = document.getElementById('addDayBtn');
+    const saveTripBtn = document.getElementById('saveTripBtn');
+    const resetTripBtn = document.getElementById('resetTripBtn');
+    const clearTripBtn = document.getElementById('clearTripBtn');
+    
+    // Edit modal elements
+    const editDayId = document.getElementById('editDayId');
+    const editDayTitle = document.getElementById('editDayTitle');
+    const editDayLocation = document.getElementById('editDayLocation');
+    const editDayDate = document.getElementById('editDayDate');
+    const editDayPrice = document.getElementById('editDayPrice');
+    const editDayDescription = document.getElementById('editDayDescription');
+    const editStartTime = document.getElementById('editStartTime');
+    const editEndTime = document.getElementById('editEndTime');
+    const editDayPrivacy = document.getElementById('editDayPrivacy');
+    const highlightsList = document.getElementById('highlightsList');
+    const addHighlightBtn = document.getElementById('addHighlightBtn');
+    const deleteDayBtn = document.getElementById('deleteDayBtn');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    
+    // Header modal elements
+    const editTripTitle = document.getElementById('editTripTitle');
+    const editTripSubtitle = document.getElementById('editTripSubtitle');
+    const editTripDuration = document.getElementById('editTripDuration');
+    const editDifficulty = document.getElementById('editDifficulty');
+    const editGroupSize = document.getElementById('editGroupSize');
+    const editTripPrivacy = document.getElementById('editTripPrivacy');
+    const cancelHeaderEditBtn = document.getElementById('cancelHeaderEditBtn');
+    const editTripLanguage = document.getElementById('editTripLanguage');
+    const showBookNow = document.getElementById('showBookNow');
+    const showSchedule = document.getElementById('showSchedule');
+    
+    // State
+    let currentEditingDay = null;
+    let uploadedImages = {};
+    let allPhotos = [];
+    let tripData = {
+        days: [],
+        locations: []
+    };
+    
+    // Firebase state
+    let pageId = null;
+    let tripId = null;
+    let currentUser = null;
+    let currentUserId = null;
+    let currentHeaderPhoto = null;
+    let currentTripData = null;
+    
+    // Cropper instance
+    let cropper = null;
+    let currentImageTarget = null;
+    let currentImageDay = null;
+
+    // Real-time listeners
+    let tripDataListener = null;
+    let daysListener = null;
+    let headerPhotoListener = null;
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', async function() {
+        await initializePage();
+        setupEventListeners();
+        setupRealTimeListeners();
+    });
+
+    // Get URL parameters
+    function getUrlParams() {
+        const params = new URLSearchParams(window.location.search);
+        return {
+            pageID: params.get('pageID'),
+            tripID: params.get('tripID'),
+            selected: params.get('selected')
+        };
+    }
+
+    // Initialize page
+    async function initializePage() {
+        const urlParams = getUrlParams();
+        pageId = urlParams.pageID;
+        tripId = urlParams.tripID;
+
+        if (!pageId || !tripId) {
+            showError('Missing page ID or trip ID in URL parameters');
+            return;
+        }
+
+        console.log(`Loading trip: ${tripId} from page: ${pageId}`);
+
+        // Load user data
+        await loadUserData();
+
+        // Load initial trip data
+        await loadTripData();
+    }
+
+    // Set up real-time listeners
+    function setupRealTimeListeners() {
+        // Listen for trip data changes
+        const tripRef = ref(database, `pages/${pageId}/trips/${tripId}`);
+        tripDataListener = onValue(tripRef, (snapshot) => {
+            if (snapshot.exists()) {
+                const updatedTripData = snapshot.val();
+                currentTripData = updatedTripData;
+                updateHeaderInfo(updatedTripData);
+                updateFooterButtons(updatedTripData);
+                console.log('Trip data updated in real-time');
+            }
+        });
+
+        // Listen for days changes
+        const daysRef = ref(database, `pages/${pageId}/trips/${tripId}/days`);
+        daysListener = onValue(daysRef, (snapshot) => {
+            if (snapshot.exists()) {
+                const daysData = snapshot.val();
+                tripData.days = Object.values(daysData).sort((a, b) => a.id - b.id);
+                console.log('Days updated in real-time:', tripData.days);
+                
+                // Apply URL selected days if present
+                applySelectedDaysFromUrl();
+                
+                renderAllDays();
+                updateBookingSummary();
+                updateLocationsList();
+                
+                // Update day photos listeners when days change
+                setupDayPhotosListeners();
+            } else {
+                tripData.days = [];
+                renderAllDays();
+                updateBookingSummary();
+                updateLocationsList();
+            }
+        });
+
+        // Listen for header photo changes
+        const headerPhotoRef = ref(database, `pages/${pageId}/trips/${tripId}/photos/header`);
+        headerPhotoListener = onValue(headerPhotoRef, (snapshot) => {
+            if (snapshot.exists()) {
+                const photoData = snapshot.val();
+                currentHeaderPhoto = photoData;
+                if (photoData.imageUrl) {
+                    headerPhoto.src = photoData.imageUrl;
+                    headerBackground.style.backgroundImage = `url(${photoData.imageUrl})`;
+                    console.log('Header photo updated in real-time');
+                }
+            }
+        });
+
+        // Set up initial day photos listeners
+        setupDayPhotosListeners();
+    }
+
+    // Apply selected days from URL parameter
+    function applySelectedDaysFromUrl() {
+        const urlParams = getUrlParams();
+        const selectedDaysParam = urlParams.selected;
+        
+        if (selectedDaysParam) {
+            const selectedDayIds = selectedDaysParam.split(',').map(id => parseInt(id.trim()));
+            console.log('Applying selected days from URL:', selectedDayIds);
+            
+            tripData.days.forEach(day => {
+                // Set selected based on URL parameter
+                day.selected = selectedDayIds.includes(day.id);
+            });
+        }
+    }
+
+    // Set up listeners for day photos
+    function setupDayPhotosListeners() {
+        if (!tripData.days || tripData.days.length === 0) return;
+
+        tripData.days.forEach(day => {
+            const dayPhotosRef = ref(database, `pages/${pageId}/trips/${tripId}/days/${day.id}/photos`);
+            onValue(dayPhotosRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const photosData = snapshot.val();
+                    uploadedImages[`day${day.id}`] = Object.values(photosData);
+                    console.log(`Day ${day.id} photos updated in real-time:`, uploadedImages[`day${day.id}`]);
+                    
+                    // Update the specific day's gallery immediately
+                    updateDayGallery(day.id);
+                } else {
+                    uploadedImages[`day${day.id}`] = [];
+                    updateDayGallery(day.id);
+                }
+            });
+        });
+    }
+
+    // Update specific day's gallery - FIXED VERSION
+    function updateDayGallery(dayId) {
+        const dayElement = document.querySelector(`.trip-day[data-day="${dayId}"]`);
+        if (dayElement) {
+            const dayData = tripData.days.find(d => d.id == dayId);
+            if (dayData) {
+                const newDayElement = createDayElement(dayData);
+                dayElement.replaceWith(newDayElement);
+                
+                // Ensure the main image shows the first uploaded photo
+                updateMainImageForDay(dayId);
+            }
+        } else {
+            // If day element doesn't exist yet, re-render all days
+            renderAllDays();
+        }
+    }
+
+    // Update main image for a specific day
+    function updateMainImageForDay(dayId) {
+        const mainImage = document.getElementById(`main-image-day${dayId}`);
+        if (mainImage && uploadedImages[`day${dayId}`] && uploadedImages[`day${dayId}`].length > 0) {
+            // Set main image to first uploaded photo
+            mainImage.src = uploadedImages[`day${dayId}`][0].src;
+            console.log(`Updated main image for day ${dayId} to:`, uploadedImages[`day${dayId}`][0].src);
+        }
+    }
+
+    // Update header information without refresh
+    function updateHeaderInfo(tripData) {
+        if (tripData.title) {
+            tripTitleElement.textContent = tripData.title;
+        }
+        if (tripData.subtitle) {
+            tripSubtitleElement.textContent = tripData.subtitle;
+        }
+        if (tripData.duration) {
+            const durationValue = durationItem.querySelector('.meta-value');
+            if (durationValue) {
+                durationValue.textContent = tripData.duration;
+            }
+        }
+        if (tripData.difficulty) {
+            const difficultyValue = difficultyItem.querySelector('.meta-value');
+            if (difficultyValue) {
+                difficultyValue.textContent = tripData.difficulty;
+            }
+        }
+        if (tripData.groupSize) {
+            const groupSizeValue = groupSizeItem.querySelector('.meta-value');
+            if (groupSizeValue) {
+                groupSizeValue.textContent = tripData.groupSize;
+            }
+        }
+        if (tripData.privacy) {
+            const privacyValue = privacyItem.querySelector('.meta-value');
+            if (privacyValue) {
+                privacyValue.textContent = tripData.privacy.charAt(0).toUpperCase() + tripData.privacy.slice(1);
+            }
+        }
+    }
+
+    // Update footer buttons based on settings
+    function updateFooterButtons(tripData) {
+        footerButtons.innerHTML = '';
+        
+        const showBookNowBtn = tripData.showBookNow !== false; // Default to true if not set
+        const showScheduleBtn = tripData.showSchedule !== false; // Default to true if not set
+        const bookNowLink = tripData.bookNowLink || '#';
+        const scheduleLink = tripData.scheduleLink || '#';
+        
+        if (showBookNowBtn) {
+            const bookNowBtn = document.createElement('button');
+            bookNowBtn.className = 'book-btn';
+            bookNowBtn.textContent = 'Book Your Adventure Now';
+            bookNowBtn.addEventListener('click', function() {
+                // Add pageID, tripID and selected days parameters to the URL
+                const url = appendUrlParametersWithSelectedDays(bookNowLink);
+                window.location.href = url;
+            });
+            footerButtons.appendChild(bookNowBtn);
+        }
+        
+        if (showScheduleBtn) {
+            const scheduleBtn = document.createElement('button');
+            scheduleBtn.className = 'schedule-btn';
+            scheduleBtn.textContent = 'Schedule Your Trip';
+            scheduleBtn.addEventListener('click', function() {
+                // Add pageID, tripID and selected days parameters to the URL
+                const url = appendUrlParametersWithSelectedDays(scheduleLink);
+                window.location.href = url;
+            });
+            footerButtons.appendChild(scheduleBtn);
+        }
+        
+        // If both buttons are shown, add flex styling for proper layout
+        if (showBookNowBtn && showScheduleBtn) {
+            footerButtons.style.display = 'flex';
+            footerButtons.style.gap = '15px';
+        } else {
+            footerButtons.style.display = 'block';
+        }
+    }
+
+    // Append pageID, tripID and selected days parameters to URL
+    function appendUrlParametersWithSelectedDays(url) {
+        if (!url || url === '#') return '#';
+        
+        // Get selected day IDs
+        const selectedDayIds = getSelectedDayIds();
+        
+        // Check if URL already has query parameters
+        const separator = url.includes('?') ? '&' : '?';
+        
+        if (selectedDayIds.length > 0) {
+            return `${url}${separator}pageID=${pageId}&tripID=${tripId}&selected=${selectedDayIds.join(',')}`;
+        } else {
+            return `${url}${separator}pageID=${pageId}&tripID=${tripId}`;
+        }
+    }
+
+    // Get selected day IDs
+    function getSelectedDayIds() {
+        const selectedDays = [];
+        tripData.days.forEach(day => {
+            if (day.selected) {
+                selectedDays.push(day.id);
+            }
+        });
+        return selectedDays;
+    }
+
+    // Load user data from Firebase
+    async function loadUserData() {
+        try {
+            const usersRef = ref(database, 'users');
+            const usersSnapshot = await get(usersRef);
+            
+            if (!usersSnapshot.exists()) {
+                console.warn('No users found in database');
+                return;
+            }
+
+            const users = usersSnapshot.val();
+            let foundUser = null;
+            let foundUserId = null;
+
+            // Find user by pageID
+            for (const [userId, userData] of Object.entries(users)) {
+                if (userData.pageID === pageId) {
+                    foundUser = userData;
+                    foundUserId = userId;
+                    break;
+                }
+            }
+
+            if (foundUser && foundUserId) {
+                currentUser = foundUser;
+                currentUserId = foundUserId;
+                console.log(`User loaded: ${foundUser.firstName} ${foundUser.lastName}`);
+            } else {
+                console.warn('User not found for this page');
+            }
+            
+        } catch (error) {
+            console.error('Error loading user data:', error);
+        }
+    }
+
+    // Load trip data from Firebase
+    async function loadTripData() {
+        try {
+            const tripRef = ref(database, `pages/${pageId}/trips/${tripId}`);
+            const tripSnapshot = await get(tripRef);
+            
+            if (!tripSnapshot.exists()) {
+                console.log('No existing trip data found, initializing new trip');
+                await initializeNewTrip();
+                return;
+            }
+
+            currentTripData = tripSnapshot.val();
+            console.log('Trip data loaded successfully:', currentTripData);
+
+            // Load trip days
+            await loadTripDays();
+
+            // Load header photo
+            await loadHeaderPhoto();
+            
+        } catch (error) {
+            console.error('Error loading trip data:', error);
+            showError(`Failed to load trip: ${getErrorMessage(error)}`);
+        }
+    }
+
+    // Initialize new trip in Firebase
+    async function initializeNewTrip() {
+        try {
+            const tripData = {
+                title: "New Adventure Trip",
+                subtitle: "Plan your amazing adventure",
+                duration: "3 Days",
+                difficulty: "Moderate",
+                groupSize: "Up to 12 People",
+                language: "English",
+                showBookNow: true,
+                showSchedule: true,
+                bookNowLink: "",
+                scheduleLink: "",
+                privacy: "public",
+                locations: [],
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                createdBy: currentUserId,
+                status: "active"
+            };
+
+            const tripRef = ref(database, `pages/${pageId}/trips/${tripId}`);
+            await set(tripRef, tripData);
+
+            // Initialize days structure
+            const daysRef = ref(database, `pages/${pageId}/trips/${tripId}/days`);
+            await set(daysRef, {});
+
+            currentTripData = tripData;
+            console.log('New trip initialized in Firebase');
+
+        } catch (error) {
+            console.error('Error initializing new trip:', error);
+            throw error;
+        }
+    }
+
+    // Load trip days from Firebase
+    async function loadTripDays() {
+        try {
+            const daysRef = ref(database, `pages/${pageId}/trips/${tripId}/days`);
+            const daysSnapshot = await get(daysRef);
+            
+            if (daysSnapshot.exists()) {
+                const daysData = daysSnapshot.val();
+                tripData.days = Object.values(daysData).sort((a, b) => a.id - b.id);
+                console.log('Trip days loaded:', tripData.days);
+            } else {
+                tripData.days = [];
+                console.log('No days found for this trip');
+            }
+
+            // Load day photos
+            await loadDayPhotos();
+
+            // Initialize UI
+            renderAllDays();
+            updateBookingSummary();
+            updateLocationsList();
+            
+        } catch (error) {
+            console.error('Error loading trip days:', error);
+        }
+    }
+
+    // Load day photos from Firebase
+    async function loadDayPhotos() {
+        try {
+            for (const day of tripData.days) {
+                const dayPhotosRef = ref(database, `pages/${pageId}/trips/${tripId}/days/${day.id}/photos`);
+                const photosSnapshot = await get(dayPhotosRef);
+                
+                if (photosSnapshot.exists()) {
+                    uploadedImages[`day${day.id}`] = Object.values(photosSnapshot.val());
+                    console.log(`Loaded ${uploadedImages[`day${day.id}`].length} photos for day ${day.id}`);
+                    
+                    // Add all photos to the allPhotos array
+                    uploadedImages[`day${day.id}`].forEach(photo => {
+                        addPhotoToLibrary(photo.src, photo.name);
+                    });
+                } else {
+                    uploadedImages[`day${day.id}`] = [];
+                }
+            }
+            console.log('All day photos loaded:', uploadedImages);
+        } catch (error) {
+            console.error('Error loading day photos:', error);
+        }
+    }
+
+    // Load header photo
+    async function loadHeaderPhoto() {
+        try {
+            let photoData = null;
+            let photoUrl = null;
+
+            // Check if photos exist in the structure: pages/{pageId}/trips/{tripId}/photos/header
+            try {
+                const photoRef = ref(database, `pages/${pageId}/trips/${tripId}/photos/header`);
+                const photoSnapshot = await get(photoRef);
+                
+                if (photoSnapshot.exists()) {
+                    photoData = photoSnapshot.val();
+                    console.log('Found photo in photos/header structure:', photoData);
+                }
+            } catch (error) {
+                console.log('No photo found in photos/header structure');
+            }
+
+            // Check if photo URL is directly in trip data
+            if (!photoData && currentTripData && currentTripData.headerPhotoUrl) {
+                photoUrl = currentTripData.headerPhotoUrl;
+                console.log('Found photo URL directly in trip data:', photoUrl);
+                
+                // Create photo data object from trip data
+                photoData = {
+                    fileName: currentTripData.headerPhoto || 'header_photo',
+                    imageUrl: photoUrl,
+                    storagePath: `images/${currentTripData.headerPhoto}`,
+                    imageName: "Trip Header Photo"
+                };
+            }
+
+            // If we found photo data, display it
+            if (photoData) {
+                currentHeaderPhoto = photoData;
+                
+                // Load and display the photo
+                const displayUrl = photoData.imageUrl || photoUrl;
+                if (displayUrl) {
+                    headerPhoto.src = displayUrl;
+                    headerBackground.style.backgroundImage = `url(${displayUrl})`;
+                    console.log('Header photo displayed successfully');
+                    
+                    // Add header photo to allPhotos
+                    addPhotoToLibrary(displayUrl, "Trip Header Photo");
+                } else {
+                    console.warn('No image URL found in photo data');
+                }
+                
+            } else {
+                console.log('No header photo found for this trip');
+            }
+            
+        } catch (error) {
+            console.error('Error loading header photo:', error);
+        }
+    }
+
+    // Set up event listeners
+    function setupEventListeners() {
+        // Change header photo
+        changeHeaderPhotoBtn.addEventListener('click', function() {
+            openPhotoSelectionModal('header');
+        });
+        
+        // Edit header button
+        editHeaderBtn.addEventListener('click', function() {
+            openEditHeaderModal();
+        });
+        
+        // Header elements click to edit
+        tripTitleElement.addEventListener('click', function() {
+            openEditHeaderModal();
+        });
+        
+        tripSubtitleElement.addEventListener('click', function() {
+            openEditHeaderModal();
+        });
+        
+        durationItem.addEventListener('click', function() {
+            openEditHeaderModal();
+        });
+        
+        difficultyItem.addEventListener('click', function() {
+            openEditHeaderModal();
+        });
+        
+        groupSizeItem.addEventListener('click', function() {
+            openEditHeaderModal();
+        });
+        
+        privacyItem.addEventListener('click', function() {
+            openEditHeaderModal();
+        });
+        
+        // Day selection checkboxes - Only save if creator is changing
+        document.addEventListener('change', function(e) {
+            if (e.target.classList.contains('day-checkbox')) {
+                updateBookingSummary();
+                
+                // Save day selection if creator is making the change
+                if (currentUserId) {
+                    const dayId = e.target.id.replace('day', '');
+                    const dayData = tripData.days.find(d => d.id == dayId);
+                    if (dayData) {
+                        dayData.selected = e.target.checked;
+                        saveDayToFirebase(dayData);
+                    }
+                }
+            }
+        });
+        
+        // Gallery thumbnails - click to change main image
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('gallery-thumb')) {
+                const day = e.target.getAttribute('data-day');
+                const mainImage = document.getElementById(`main-image-day${day}`);
+                
+                // Update main image
+                if (mainImage) {
+                    mainImage.src = e.target.src;
+                }
+                
+                // Update active state
+                const allThumbs = document.querySelectorAll(`.gallery-thumb[data-day="${day}"]`);
+                allThumbs.forEach(t => t.classList.remove('active'));
+                e.target.classList.add('active');
+            }
+        });
+        
+        // Delete photo buttons - FIXED: Proper event delegation
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('delete-photo-btn') || 
+                e.target.parentElement.classList.contains('delete-photo-btn')) {
+                
+                const btn = e.target.classList.contains('delete-photo-btn') ? e.target : e.target.parentElement;
+                const container = btn.closest('.gallery-thumb-container');
+                if (!container) return;
+                
+                const thumb = container.querySelector('.gallery-thumb');
+                if (!thumb) return;
+                
+                const day = thumb.getAttribute('data-day');
+                const src = thumb.src;
+                const photoName = thumb.getAttribute('data-name');
+                
+                // Show confirmation dialog
+                if (confirm(`Are you sure you want to delete the photo "${photoName}"?`)) {
+                    deletePhoto(day, src, container);
+                }
+            }
+        });
+        
+        // Edit day buttons
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('edit-day-btn') || 
+                e.target.parentElement.classList.contains('edit-day-btn')) {
+                const btn = e.target.classList.contains('edit-day-btn') ? e.target : e.target.parentElement;
+                const day = btn.getAttribute('data-day');
+                openEditDayModal(day);
+            }
+        });
+        
+        // Image upload buttons
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('image-upload-btn') || 
+                e.target.classList.contains('add-photo-placeholder') ||
+                e.target.parentElement.classList.contains('image-upload-btn') ||
+                e.target.parentElement.classList.contains('add-photo-placeholder')) {
+                
+                const btn = e.target.classList.contains('image-upload-btn') || 
+                           e.target.classList.contains('add-photo-placeholder') ? 
+                           e.target : e.target.parentElement;
+                
+                const day = btn.getAttribute('data-day');
+                openPhotoSelectionModal('day', day);
+            }
+        });
+        
+        // Image upload handler
+        imageUploadInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const target = this.getAttribute('data-target');
+                const day = this.getAttribute('data-day');
+                const file = this.files[0]; // Store the file reference
+                
+                // Clear the input immediately
+                this.value = '';
+                
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    if (target === 'header') {
+                        // Open cropper for header image
+                        openCropperModal(e.target.result, 'header');
+                    } else {
+                        // Handle day photo upload
+                        openCropperModal(e.target.result, 'day', day);
+                    }
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Cropper actions
+        cancelCropBtn.addEventListener('click', function() {
+            closeCropperModal();
+        });
+        
+        cropImageBtn.addEventListener('click', async function() {
+            if (cropper) {
+                const croppedCanvas = cropper.getCroppedCanvas({
+                    width: 300,
+                    height: 300
+                });
+                
+                const croppedImage = croppedCanvas.toDataURL('image/jpeg');
+                
+                // Auto-generate photo name based on context and timestamp
+                let photoName = "";
+                if (currentImageTarget === 'header') {
+                    photoName = `Header Photo ${formatDateForName(new Date())}`;
+                } else {
+                    photoName = `Day ${currentImageDay} Photo ${formatDateForName(new Date())}`;
+                }
+                
+                if (currentImageTarget === 'header') {
+                    // Convert data URL to blob for Firebase Storage
+                    const blob = dataURLToBlob(croppedImage);
+                    await uploadHeaderPhoto(blob, photoName);
+                } else {
+                    // Handle day photo
+                    const day = currentImageDay;
+                    const blob = dataURLToBlob(croppedImage);
+                    await uploadDayPhoto(day, blob, photoName);
+                }
+                
+                closeCropperModal();
+            }
+        });
+        
+        // Photo selection actions
+        cancelPhotoSelectionBtn.addEventListener('click', function() {
+            closePhotoSelectionModal();
+        });
+        
+        uploadNewPhotoBtn.addEventListener('click', function() {
+            const target = photoSelectionModal.getAttribute('data-target');
+            const day = photoSelectionModal.getAttribute('data-day');
+            
+            imageUploadInput.setAttribute('data-target', target);
+            if (day) {
+                imageUploadInput.setAttribute('data-day', day);
+            }
+            imageUploadInput.click();
+            closePhotoSelectionModal();
+        });
+        
+        // Control buttons
+        addDayBtn.addEventListener('click', addNewDay);
+        saveTripBtn.addEventListener('click', saveTrip);
+        resetTripBtn.addEventListener('click', resetTrip);
+        clearTripBtn.addEventListener('click', clearTrip);
+        
+        // Edit modal
+        addHighlightBtn.addEventListener('click', addHighlightInput);
+        deleteDayBtn.addEventListener('click', deleteCurrentDay);
+        cancelEditBtn.addEventListener('click', closeEditDayModal);
+        editDayForm.addEventListener('submit', saveDayChanges);
+        
+        // Header modal
+        cancelHeaderEditBtn.addEventListener('click', closeEditHeaderModal);
+        editHeaderForm.addEventListener('submit', saveHeaderChanges);
+        
+        // Privacy option selection
+        document.querySelectorAll('.privacy-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const parent = this.closest('.form-group');
+                const hiddenInput = parent.querySelector('input[type="hidden"]');
+                const options = parent.querySelectorAll('.privacy-option');
+                
+                options.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                hiddenInput.value = this.getAttribute('data-value');
+            });
+        });
+        
+        // Button option toggles
+        showBookNow.addEventListener('change', function() {
+            bookNowLinkGroup.style.display = this.checked ? 'block' : 'none';
+        });
+        
+        showSchedule.addEventListener('change', function() {
+            scheduleLinkGroup.style.display = this.checked ? 'block' : 'none';
+        });
+        
+        // Close modals when clicking X or outside
+        document.querySelectorAll('.close-modal').forEach(btn => {
+            btn.addEventListener('click', function() {
+                closeEditDayModal();
+                closeEditHeaderModal();
+                closeCropperModal();
+                closePhotoSelectionModal();
+            });
+        });
+        
+        editDayModal.addEventListener('click', function(e) {
+            if (e.target === editDayModal) {
+                closeEditDayModal();
+            }
+        });
+        
+        editHeaderModal.addEventListener('click', function(e) {
+            if (e.target === editHeaderModal) {
+                closeEditHeaderModal();
+            }
+        });
+        
+        cropperModal.addEventListener('click', function(e) {
+            if (e.target === cropperModal) {
+                closeCropperModal();
+            }
+        });
+        
+        photoSelectionModal.addEventListener('click', function(e) {
+            if (e.target === photoSelectionModal) {
+                closePhotoSelectionModal();
+            }
+        });
+    }
+
+    // Firebase Storage Functions
+
+    // Upload header photo to Firebase Storage - FIXED: Add to allPhotos after upload
+    async function uploadHeaderPhoto(blob, photoName) {
+        try {
+            showUploadProgress();
+            closeCropperModal(); // Hide cropping modal during upload
+
+            // Delete old photo if exists
+            if (currentHeaderPhoto && currentHeaderPhoto.storagePath) {
+                try {
+                    const oldPhotoRef = storageRef(storage, currentHeaderPhoto.storagePath);
+                    await deleteObject(oldPhotoRef);
+                    console.log('Old header photo deleted from storage');
+                } catch (deleteError) {
+                    console.error('Error deleting old header photo:', deleteError);
+                }
+            }
+
+            // Generate unique file name with auto naming
+            const timestamp = Date.now();
+            const fileName = `header_${tripId}_${timestamp}.jpg`;
+            const storagePath = `images/${fileName}`;
+            const photoStorageRef = storageRef(storage, storagePath);
+
+            // Upload with progress tracking
+            const uploadTask = uploadBytesResumable(photoStorageRef, blob);
+            
+            await new Promise((resolve, reject) => {
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        updateUploadProgress(progress);
+                    },
+                    (error) => {
+                        console.error('Header photo upload error:', error);
+                        hideUploadProgress();
+                        reject(new Error(`Photo upload failed: ${getErrorMessage(error)}`));
+                    },
+                    async () => {
+                        try {
+                            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                            console.log('Header photo uploaded successfully, URL:', downloadURL);
+
+                            // Save photo data to database
+                            await saveHeaderPhotoData(fileName, downloadURL, storagePath, photoName);
+                            
+                            // FIXED: Add to allPhotos after successful upload
+                            addPhotoToLibrary(downloadURL, photoName);
+                            
+                            hideUploadProgress();
+                            resolve();
+                        } catch (error) {
+                            console.error('Error getting download URL:', error);
+                            hideUploadProgress();
+                            reject(new Error('Failed to get download URL'));
+                        }
+                    }
+                );
+            });
+
+        } catch (error) {
+            console.error('Error uploading header photo:', error);
+            showError(`Failed to upload header photo: ${getErrorMessage(error)}`);
+            hideUploadProgress();
+        }
+    }
+
+    // Upload day photo to Firebase Storage - FIXED: Add to allPhotos after upload
+    async function uploadDayPhoto(day, blob, photoName) {
+        try {
+            showUploadProgress();
+            closeCropperModal(); // Hide cropping modal during upload
+
+            // Generate unique file name with auto naming
+            const timestamp = Date.now();
+            const fileName = `day${day}_${tripId}_${timestamp}.jpg`;
+            const storagePath = `images/${fileName}`;
+            const photoStorageRef = storageRef(storage, storagePath);
+
+            // Upload with progress tracking
+            const uploadTask = uploadBytesResumable(photoStorageRef, blob);
+            
+            await new Promise((resolve, reject) => {
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        updateUploadProgress(progress);
+                    },
+                    (error) => {
+                        console.error('Day photo upload error:', error);
+                        hideUploadProgress();
+                        reject(new Error(`Photo upload failed: ${getErrorMessage(error)}`));
+                    },
+                    async () => {
+                        try {
+                            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                            console.log('Day photo uploaded successfully, URL:', downloadURL);
+
+                            // Save photo data to database
+                            await saveDayPhotoData(day, fileName, downloadURL, storagePath, photoName);
+                            
+                            // FIXED: Add to allPhotos after successful upload
+                            addPhotoToLibrary(downloadURL, photoName);
+                            
+                            hideUploadProgress();
+                            resolve();
+                        } catch (error) {
+                            console.error('Error getting download URL:', error);
+                            hideUploadProgress();
+                            reject(new Error('Failed to get download URL'));
+                        }
+                    }
+                );
+            });
+
+        } catch (error) {
+            console.error('Error uploading day photo:', error);
+            showError(`Failed to upload photo: ${getErrorMessage(error)}`);
+            hideUploadProgress();
+        }
+    }
+
+    // Save header photo data to Firebase Database
+    async function saveHeaderPhotoData(fileName, downloadURL, storagePath, photoName) {
+        try {
+            // Create photos structure
+            const tripPhotosRef = ref(database, `pages/${pageId}/trips/${tripId}/photos/header`);
+            const photoData = {
+                fileName: fileName,
+                imageName: photoName,
+                uploadedBy: currentUserId,
+                uploadedAt: new Date().toISOString(),
+                imageUrl: downloadURL,
+                storagePath: storagePath
+            };
+            
+            console.log('Saving header photo data to database:', photoData);
+            await set(tripPhotosRef, photoData);
+            
+            // Update user's photo library
+            if (currentUserId) {
+                const sanitizedFileName = sanitizeDatabaseKey(fileName);
+                const userPhotoRef = ref(database, `users/${currentUserId}/photoLibrary/${sanitizedFileName}`);
+                await set(userPhotoRef, {
+                    fileName: fileName,
+                    imageName: photoName,
+                    uploadedAt: new Date().toISOString(),
+                    usedIn: [`${tripId}/header`],
+                    imageUrl: downloadURL,
+                    storagePath: storagePath
+                });
+            }
+            
+            // Update trip data with photo references
+            const tripRef = ref(database, `pages/${pageId}/trips/${tripId}`);
+            await update(tripRef, {
+                headerPhoto: fileName,
+                headerPhotoUrl: downloadURL,
+                updatedAt: new Date().toISOString()
+            });
+            
+            console.log('Header photo data saved successfully');
+            
+        } catch (error) {
+            console.error('Error saving header photo data:', error);
+            throw new Error(`Failed to save photo data: ${getErrorMessage(error)}`);
+        }
+    }
+
+    // Save day photo data to Firebase Database
+    async function saveDayPhotoData(day, fileName, downloadURL, storagePath, photoName) {
+        try {
+            const photoId = `photo_${Date.now()}`;
+            const dayPhotosRef = ref(database, `pages/${pageId}/trips/${tripId}/days/${day}/photos/${photoId}`);
+            const photoData = {
+                id: photoId,
+                src: downloadURL,
+                name: photoName,
+                fileName: fileName,
+                storagePath: storagePath,
+                uploadedAt: new Date().toISOString(),
+                uploadedBy: currentUserId
+            };
+            
+            console.log('Saving day photo data to database:', photoData);
+            await set(dayPhotosRef, photoData);
+            
+            // Update user's photo library
+            if (currentUserId) {
+                const sanitizedFileName = sanitizeDatabaseKey(fileName);
+                const userPhotoRef = ref(database, `users/${currentUserId}/photoLibrary/${sanitizedFileName}`);
+                await set(userPhotoRef, {
+                    fileName: fileName,
+                    imageName: photoName,
+                    uploadedAt: new Date().toISOString(),
+                    usedIn: [`${tripId}/days/${day}`],
+                    imageUrl: downloadURL,
+                    storagePath: storagePath
+                });
+            }
+            
+            console.log('Day photo data saved successfully');
+            
+        } catch (error) {
+            console.error('Error saving day photo data:', error);
+            throw new Error(`Failed to save photo data: ${getErrorMessage(error)}`);
+        }
+    }
+
+    // Delete photo from Firebase Storage and Database - FIXED: Proper removal from allPhotos
+    async function deletePhoto(day, src, container) {
+        try {
+            // Find the photo data
+            let photoData = null;
+            if (uploadedImages[`day${day}`]) {
+                photoData = uploadedImages[`day${day}`].find(photo => photo.src === src);
+            }
+
+            if (photoData) {
+                // Only delete from storage if it's not a library photo
+                if (photoData.storagePath && photoData.storagePath !== 'selected_from_library') {
+                    // Delete from storage
+                    const photoStorageRef = storageRef(storage, photoData.storagePath);
+                    await deleteObject(photoStorageRef);
+                    console.log('Photo deleted from storage');
+                } else {
+                    console.log('Library photo - skipping storage deletion');
+                }
+
+                // Delete from database
+                const dayPhotosRef = ref(database, `pages/${pageId}/trips/${tripId}/days/${day}/photos/${photoData.id}`);
+                await remove(dayPhotosRef);
+
+                // Remove from user's photo library if it's not a library photo
+                if (currentUserId && photoData.fileName && photoData.storagePath !== 'selected_from_library') {
+                    const sanitizedFileName = sanitizeDatabaseKey(photoData.fileName);
+                    const userPhotoRef = ref(database, `users/${currentUserId}/photoLibrary/${sanitizedFileName}`);
+                    await remove(userPhotoRef);
+                }
+                
+                // Remove from allPhotos array - FIXED: Proper removal
+                const photoIndex = allPhotos.findIndex(photo => photo.src === src);
+                if (photoIndex !== -1) {
+                    allPhotos.splice(photoIndex, 1);
+                    console.log('Photo removed from allPhotos array');
+                }
+            }
+
+            console.log('Photo deleted successfully');
+            
+            // Remove the container from DOM immediately
+            if (container && container.parentNode) {
+                container.parentNode.removeChild(container);
+            }
+            
+        } catch (error) {
+            console.error('Error deleting photo:', error);
+            
+            // If it's a "not found" error for library photos, just continue with deletion
+            if (error.code === 'storage/object-not-found' && 
+                photoData && photoData.storagePath === 'selected_from_library') {
+                console.log('Library photo - continuing with database deletion only');
+                
+                // Continue with database deletion even if storage deletion failed
+                if (photoData) {
+                    const dayPhotosRef = ref(database, `pages/${pageId}/trips/${tripId}/days/${day}/photos/${photoData.id}`);
+                    await remove(dayPhotosRef);
+                    
+                    // Remove from allPhotos array
+                    const photoIndex = allPhotos.findIndex(photo => photo.src === src);
+                    if (photoIndex !== -1) {
+                        allPhotos.splice(photoIndex, 1);
+                    }
+                    
+                    // Remove the container from DOM
+                    if (container && container.parentNode) {
+                        container.parentNode.removeChild(container);
+                    }
+                }
+            } else {
+                showError(`Failed to delete photo: ${getErrorMessage(error)}`);
+            }
+        }
+    }
+
+    // Save photo selection to Firebase - FIXED: Better handling for library photos
+    async function savePhotoSelectionToFirebase(target, src, name, day = null) {
+        try {
+            if (target === 'header') {
+                // Find the photo in allPhotos
+                const selectedPhoto = allPhotos.find(photo => photo.src === src);
+                if (!selectedPhoto) {
+                    console.error('Selected photo not found in allPhotos');
+                    return;
+                }
+
+                // Save header photo data to database
+                const tripPhotosRef = ref(database, `pages/${pageId}/trips/${tripId}/photos/header`);
+                const photoData = {
+                    fileName: `header_selected_${Date.now()}`,
+                    imageName: name,
+                    uploadedBy: currentUserId,
+                    uploadedAt: new Date().toISOString(),
+                    imageUrl: src,
+                    storagePath: 'selected_from_library',
+                    selectedFromLibrary: true,
+                    isLibraryPhoto: true // Add flag to identify library photos
+                };
+                
+                await set(tripPhotosRef, photoData);
+
+                // Update trip data
+                const tripRef = ref(database, `pages/${pageId}/trips/${tripId}`);
+                await update(tripRef, {
+                    headerPhotoUrl: src,
+                    updatedAt: new Date().toISOString()
+                });
+
+                console.log('Header photo selection saved successfully');
+                
+            } else if (target === 'day' && day) {
+                // Find the photo in allPhotos
+                const selectedPhoto = allPhotos.find(photo => photo.src === src);
+                if (!selectedPhoto) {
+                    console.error('Selected photo not found in allPhotos');
+                    return;
+                }
+
+                // Save day photo data to database
+                const photoId = `photo_${Date.now()}`;
+                const dayPhotosRef = ref(database, `pages/${pageId}/trips/${tripId}/days/${day}/photos/${photoId}`);
+                const photoData = {
+                    id: photoId,
+                    src: src,
+                    name: name,
+                    fileName: `day${day}_selected_${Date.now()}`,
+                    storagePath: 'selected_from_library',
+                    uploadedAt: new Date().toISOString(),
+                    uploadedBy: currentUserId,
+                    selectedFromLibrary: true,
+                    isLibraryPhoto: true // Add flag to identify library photos
+                };
+                
+                await set(dayPhotosRef, photoData);
+
+                console.log(`Day ${day} photo selection saved successfully`);
+            }
+            
+        } catch (error) {
+            console.error('Error saving photo selection:', error);
+            showError(`Failed to save photo selection: ${getErrorMessage(error)}`);
+        }
+    }
+
+    // Save day to Firebase
+    async function saveDayToFirebase(dayData) {
+        try {
+            const dayRef = ref(database, `pages/${pageId}/trips/${tripId}/days/${dayData.id}`);
+            await set(dayRef, dayData);
+            
+            console.log('Day saved to Firebase:', dayData);
+            return true;
+        } catch (error) {
+            console.error('Error saving day to Firebase:', error);
+            throw error;
+        }
+    }
+
+    // Delete day from Firebase
+    async function deleteDayFromFirebase(dayId) {
+        try {
+            const dayRef = ref(database, `pages/${pageId}/trips/${tripId}/days/${dayId}`);
+            await remove(dayRef);
+            
+            // Also delete day photos
+            const dayPhotosRef = ref(database, `pages/${pageId}/trips/${tripId}/days/${dayId}/photos`);
+            await remove(dayPhotosRef);
+            
+            console.log('Day deleted from Firebase:', dayId);
+        } catch (error) {
+            console.error('Error deleting day from Firebase:', error);
+            throw error;
+        }
+    }
+
+    // Update trip header in Firebase
+    async function updateTripHeader(headerData) {
+        try {
+            const tripRef = ref(database, `pages/${pageId}/trips/${tripId}`);
+            await update(tripRef, {
+                ...headerData,
+                updatedAt: new Date().toISOString()
+            });
+            
+            console.log('Trip header updated in Firebase:', headerData);
+        } catch (error) {
+            console.error('Error updating trip header:', error);
+            throw error;
+        }
+    }
+
+    // UI Functions
+
+    function renderAllDays() {
+        tripDaysContainer.innerHTML = '';
+        
+        tripData.days.forEach(day => {
+            const dayElement = createDayElement(day);
+            tripDaysContainer.appendChild(dayElement);
+        });
+    }
+    
+    function createDayElement(day) {
+        const dayElement = document.createElement('div');
+        dayElement.className = 'trip-day';
+        dayElement.setAttribute('data-day', day.id);
+        dayElement.setAttribute('id', `day-${day.id}`);
+        
+        // Calculate duration
+        const durationHours = calculateDurationHours(day.startTime, day.endTime);
+        
+        // Create highlights HTML
+        let highlightsHTML = '';
+        day.highlights.forEach(highlight => {
+            highlightsHTML += `
+                <li>
+                    <span class="highlight-text">${highlight}</span>
+                    <button class="edit-highlight"><i class="fas fa-edit"></i></button>
+                </li>
+            `;
+        });
+        
+        // Create gallery HTML - show actual photos from Firebase
+        let galleryHTML = '';
+        if (uploadedImages[`day${day.id}`] && uploadedImages[`day${day.id}`].length > 0) {
+            uploadedImages[`day${day.id}`].forEach((photo, index) => {
+                const activeClass = index === 0 ? 'active' : '';
+                galleryHTML += `
+                    <div class="gallery-thumb-container">
+                        <img src="${photo.src}" alt="${photo.name}" class="gallery-thumb ${activeClass}" data-day="${day.id}" data-name="${photo.name}">
+                        <button class="delete-photo-btn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+            });
+        } else {
+            // Show placeholder when no photos
+            galleryHTML = `
+                <div class="gallery-thumb-container">
+                    <div class="no-photo-placeholder" data-day="${day.id}">
+                        <i class="fas fa-camera"></i>
+                        <span>No photos yet</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Set main image - use first uploaded photo or default
+        let mainImageSrc = "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80";
+        if (uploadedImages[`day${day.id}`] && uploadedImages[`day${day.id}`].length > 0) {
+            mainImageSrc = uploadedImages[`day${day.id}`][0].src;
+        }
+        
+        // Create privacy badge
+        const privacyBadge = day.privacy === 'private' ? 
+            `<span class="privacy-badge private"><i class="fas fa-lock"></i> Private</span>` : 
+            `<span class="privacy-badge public"><i class="fas fa-globe"></i> Public</span>`;
+        
+        dayElement.innerHTML = `
+            <div class="day-header">
+                <div>
+                    <h2 class="day-title">${day.title} ${privacyBadge}</h2>
+                    <div class="trip-date">${day.date}</div>
+                    <div class="day-location">
+                        <i class="fas fa-map-marker-alt"></i> ${day.location}
+                    </div>
+                </div>
+                <div class="day-price">$${day.price}</div>
+            </div>
+            <div class="main-image-container">
+                <img src="${mainImageSrc}" 
+                     alt="${day.title}" class="main-image" id="main-image-day${day.id}">
+                <button class="image-upload-btn" data-day="${day.id}">
+                    <i class="fas fa-camera"></i>
+                </button>
+                <button class="edit-day-btn" data-day="${day.id}">
+                    <i class="fas fa-edit"></i> Edit
+                </button>
+            </div>
+            <div class="image-gallery" data-day="${day.id}">
+                ${galleryHTML}
+                <div class="add-photo-placeholder" data-day="${day.id}">
+                    <i class="fas fa-plus"></i>
+                </div>
+            </div>
+            <div class="trip-details">
+                <div class="time-info">
+                    <div class="time-item">
+                        <div class="time-label">Start Time</div>
+                        <div class="time-value">${day.startTime}</div>
+                    </div>
+                    <div class="time-item">
+                        <div class="time-label">End Time</div>
+                        <div class="time-value">${day.endTime}</div>
+                    </div>
+                    <div class="time-item">
+                        <div class="time-label">Duration</div>
+                        <div class="time-value">${durationHours}</div>
+                    </div>
+                </div>
+                <p>${day.description}</p>
+                <div class="trip-highlights">
+                    <h3>Highlights</h3>
+                    <ul>
+                        ${highlightsHTML}
+                    </ul>
+                </div>
+                <div class="day-selector">
+                    <input type="checkbox" id="day${day.id}" class="day-checkbox" ${day.selected ? 'checked' : ''}>
+                    <label for="day${day.id}" class="day-label">Select Day ${day.id}</label>
+                </div>
+            </div>
+        `;
+        
+        return dayElement;
+    }
+    
+    function calculateDurationHours(startTime, endTime) {
+        // Convert times to 24-hour format for calculation
+        const start24 = convertTo24Hour(startTime);
+        const end24 = convertTo24Hour(endTime);
+        
+        // Parse times
+        const [startHours, startMinutes] = start24.split(':').map(Number);
+        const [endHours, endMinutes] = end24.split(':').map(Number);
+        
+        // Calculate duration in minutes
+        let durationMinutes = (endHours * 60 + endMinutes) - (startHours * 60 + startMinutes);
+        
+        // Handle overnight duration (if end time is earlier than start time)
+        if (durationMinutes < 0) {
+            durationMinutes += 24 * 60; // Add 24 hours
+        }
+        
+        // Return appropriate format based on duration
+        if (durationMinutes < 60) {
+            return `${durationMinutes} minutes`;
+        } else if (durationMinutes === 60) {
+            return "1 hour";
+        } else {
+            const hours = Math.floor(durationMinutes / 60);
+            const minutes = durationMinutes % 60;
+            
+            if (minutes === 0) {
+                return `${hours} hours`;
+            } else {
+                return `${hours} hours ${minutes} minutes`;
+            }
+        }
+    }
+    
+    // Add photo to library - FIXED: Prevent duplicates
+    function addPhotoToLibrary(imageSrc, photoName) {
+        // Check if photo already exists
+        const existingPhoto = allPhotos.find(photo => photo.src === imageSrc);
+        if (existingPhoto) {
+            console.log('Photo already exists in library:', photoName);
+            return;
+        }
+        
+        const photo = {
+            src: imageSrc,
+            name: photoName,
+            addedAt: new Date().toISOString()
+        };
+        
+        allPhotos.push(photo);
+        console.log('Photo added to library:', photoName);
+    }
+    
+    // Open photo selection modal - FIXED: Proper population of available photos
+    function openPhotoSelectionModal(target, day = null) {
+        currentImageTarget = target;
+        currentImageDay = day;
+        
+        // Set modal attributes
+        photoSelectionModal.setAttribute('data-target', target);
+        if (day) {
+            photoSelectionModal.setAttribute('data-day', day);
+        }
+        
+        // Populate available photos - FIXED: Clear and repopulate properly
+        availablePhotosList.innerHTML = '';
+        
+        if (allPhotos.length === 0) {
+            availablePhotosList.innerHTML = '<div class="no-photos-message">No photos available. Upload a new photo.</div>';
+        } else {
+            allPhotos.forEach(photo => {
+                const photoElement = document.createElement('div');
+                photoElement.className = 'available-photo-item';
+                photoElement.innerHTML = `
+                    <img src="${photo.src}" class="available-photo" data-src="${photo.src}" alt="${photo.name}">
+                    <div class="photo-name">${photo.name}</div>
+                `;
+                
+                photoElement.addEventListener('click', function() {
+                    selectPhoto(photo.src, photo.name);
+                });
+                
+                availablePhotosList.appendChild(photoElement);
+            });
+        }
+        
+        // Show modal
+        photoSelectionModal.style.display = 'flex';
+    }
+    
+    function closePhotoSelectionModal() {
+        photoSelectionModal.style.display = 'none';
+        currentImageTarget = null;
+        currentImageDay = null;
+    }
+    
+    // Select photo from available photos - FIXED: Proper handling for both header and day photos
+    function selectPhoto(src, name) {
+        if (currentImageTarget === 'header') {
+            // Update header photo directly
+            headerPhoto.src = src;
+            headerBackground.style.backgroundImage = `url(${src})`;
+            
+            // Save the selection to Firebase
+            savePhotoSelectionToFirebase('header', src, name);
+        } else {
+            // Handle day photo - add to day's photos
+            const day = currentImageDay;
+            savePhotoSelectionToFirebase('day', src, name, day);
+        }
+        
+        closePhotoSelectionModal();
+    }
+    
+    function updateLocationsList() {
+        // Extract unique locations from trip days
+        const locations = [...new Set(tripData.days.map(day => day.location))];
+        
+        // Update locations list in header
+        locationsList.innerHTML = '';
+        
+        locations.forEach(location => {
+            const locationTag = document.createElement('div');
+            locationTag.className = 'location-tag';
+            locationTag.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${location}`;
+            locationTag.addEventListener('click', function() {
+                // Find the day with this location
+                const dayWithLocation = tripData.days.find(day => day.location === location);
+                if (dayWithLocation) {
+                    // Scroll to that day
+                    const dayElement = document.getElementById(`day-${dayWithLocation.id}`);
+                    if (dayElement) {
+                        dayElement.scrollIntoView({ behavior: 'smooth' });
+                        
+                        // Add a highlight effect
+                        dayElement.style.boxShadow = '0 0 0 3px var(--primary)';
+                        setTimeout(() => {
+                            dayElement.style.boxShadow = '';
+                        }, 2000);
+                    }
+                }
+            });
+            locationsList.appendChild(locationTag);
+        });
+        
+        // Add the "Add Location" button
+        const addBtn = document.createElement('div');
+        addBtn.className = 'location-tag add-location';
+        addBtn.innerHTML = '<i class="fas fa-plus"></i> Add Location';
+        addBtn.addEventListener('click', function() {
+            addNewDay();
+        });
+        locationsList.appendChild(addBtn);
+    }
+    
+    function updateBookingSummary() {
+        let selectedDays = [];
+        let totalPrice = 0;
+        
+        tripData.days.forEach(day => {
+            const checkbox = document.getElementById(`day${day.id}`);
+            if (checkbox && checkbox.checked) {
+                selectedDays.push(`Day ${day.id}`);
+                totalPrice += day.price;
+            }
+        });
+        
+        // Update selected days display
+        if (selectedDays.length > 0) {
+            selectedDaysElement.textContent = `Selected: ${selectedDays.join(', ')}`;
+        } else {
+            selectedDaysElement.textContent = 'No days selected';
+        }
+        
+        // Update total price
+        totalPriceElement.textContent = `Total: $${totalPrice}`;
+    }
+    
+    function openCropperModal(imageSrc, target, day = null) {
+        currentImageTarget = target;
+        currentImageDay = day;
+        
+        // Set image source
+        cropperImage.src = imageSrc;
+        
+        // Show modal
+        cropperModal.style.display = 'flex';
+        
+        // Initialize cropper after image is loaded
+        cropperImage.onload = function() {
+            if (cropper) {
+                cropper.destroy();
+            }
+            
+            cropper = new Cropper(cropperImage, {
+                aspectRatio: 1, // Square aspect ratio
+                viewMode: 1,
+                guides: true,
+                background: false,
+                movable: true,
+                rotatable: true,
+                scalable: true,
+                zoomable: true,
+                zoomOnTouch: true,
+                zoomOnWheel: true,
+                wheelZoomRatio: 0.1,
+                cropBoxMovable: true,
+                cropBoxResizable: true,
+                toggleDragModeOnDblclick: true,
+                minCropBoxWidth: 100,
+                minCropBoxHeight: 100
+            });
+        };
+    }
+    
+    function closeCropperModal() {
+        cropperModal.style.display = 'none';
+        
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+        
+        currentImageTarget = null;
+        currentImageDay = null;
+    }
+    
+    function openEditHeaderModal() {
+        // Populate form with current data
+        editTripTitle.value = currentTripData.title || '';
+        editTripSubtitle.value = currentTripData.subtitle || '';
+        editTripDuration.value = currentTripData.duration || '';
+        editDifficulty.value = currentTripData.difficulty || 'Moderate';
+        editGroupSize.value = currentTripData.groupSize || '';
+        editTripLanguage.value = currentTripData.language || 'English';
+        showBookNow.checked = currentTripData.showBookNow !== false;
+        showSchedule.checked = currentTripData.showSchedule !== false;
+        bookNowLink.value = currentTripData.bookNowLink || '';
+        scheduleLink.value = currentTripData.scheduleLink || '';
+        editTripPrivacy.value = currentTripData.privacy || 'public';
+        
+        // Show/hide link inputs based on button selections
+        bookNowLinkGroup.style.display = showBookNow.checked ? 'block' : 'none';
+        scheduleLinkGroup.style.display = showSchedule.checked ? 'block' : 'none';
+        
+        // Set privacy option
+        const privacyOptions = editHeaderModal.querySelectorAll('.privacy-option');
+        privacyOptions.forEach(option => {
+            option.classList.remove('selected');
+            if (option.getAttribute('data-value') === (currentTripData.privacy || 'public')) {
+                option.classList.add('selected');
+            }
+        });
+        
+        // Show modal
+        editHeaderModal.style.display = 'flex';
+    }
+    
+    function closeEditHeaderModal() {
+        editHeaderModal.style.display = 'none';
+    }
+    
+    async function saveHeaderChanges(e) {
+        e.preventDefault();
+        
+        const headerData = {
+            title: editTripTitle.value,
+            subtitle: editTripSubtitle.value,
+            duration: editTripDuration.value,
+            difficulty: editDifficulty.value,
+            groupSize: editGroupSize.value,
+            language: editTripLanguage.value,
+            showBookNow: showBookNow.checked,
+            showSchedule: showSchedule.checked,
+            bookNowLink: bookNowLink.value,
+            scheduleLink: scheduleLink.value,
+            privacy: editTripPrivacy.value
+        };
+        
+        try {
+            // Save to Firebase - UI will update automatically via real-time listener
+            await updateTripHeader(headerData);
+            
+            // Close modal
+            closeEditHeaderModal();
+            
+            // Show success message
+            showSuccess('Header updated successfully!');
+            
+        } catch (error) {
+            console.error('Error saving header changes:', error);
+            showError(`Failed to save changes: ${getErrorMessage(error)}`);
+        }
+    }
+    
+    function openEditDayModal(day) {
+        currentEditingDay = day;
+        const dayData = tripData.days.find(d => d.id == day);
+        
+        if (!dayData) return;
+        
+        // Populate form with current data
+        editDayId.value = day;
+        editDayTitle.value = dayData.title;
+        editDayLocation.value = dayData.location;
+        
+        const dateText = dayData.date;
+        editDayDate.value = formatDateForInput(dateText);
+        
+        editDayPrice.value = dayData.price;
+        editDayDescription.value = dayData.description;
+        
+        editStartTime.value = convertTo24Hour(dayData.startTime);
+        editEndTime.value = convertTo24Hour(dayData.endTime);
+        editDayPrivacy.value = dayData.privacy || 'public';
+        
+        // Set privacy option
+        const privacyOptions = editDayModal.querySelectorAll('.privacy-option');
+        privacyOptions.forEach(option => {
+            option.classList.remove('selected');
+            if (option.getAttribute('data-value') === (dayData.privacy || 'public')) {
+                option.classList.add('selected');
+            }
+        });
+        
+        // Populate highlights
+        highlightsList.innerHTML = '';
+        dayData.highlights.forEach(highlight => {
+            addHighlightInput(highlight);
+        });
+        
+        // Show modal
+        editDayModal.style.display = 'flex';
+    }
+    
+    function closeEditDayModal() {
+        editDayModal.style.display = 'none';
+        currentEditingDay = null;
+    }
+    
+    function addHighlightInput(value = '') {
+        const highlightItem = document.createElement('div');
+        highlightItem.className = 'highlight-item';
+        
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'form-control';
+        input.value = value;
+        input.placeholder = 'Enter a highlight';
+        
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'remove-highlight';
+        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        removeBtn.addEventListener('click', function() {
+            highlightItem.remove();
+        });
+        
+        highlightItem.appendChild(input);
+        highlightItem.appendChild(removeBtn);
+        highlightsList.appendChild(highlightItem);
+    }
+    
+    async function saveDayChanges(e) {
+        e.preventDefault();
+        
+        if (!currentEditingDay) return;
+        
+        const dayData = tripData.days.find(d => d.id == currentEditingDay);
+        if (!dayData) return;
+        
+        // Update day data
+        dayData.title = editDayTitle.value;
+        dayData.location = editDayLocation.value;
+        dayData.date = formatDateForDisplay(editDayDate.value);
+        dayData.price = parseInt(editDayPrice.value);
+        dayData.description = editDayDescription.value;
+        dayData.startTime = convertTo12Hour(editStartTime.value);
+        dayData.endTime = convertTo12Hour(editEndTime.value);
+        dayData.privacy = editDayPrivacy.value;
+        dayData.updatedAt = new Date().toISOString();
+        
+        // Update highlights
+        dayData.highlights = [];
+        const highlightInputs = highlightsList.querySelectorAll('input');
+        highlightInputs.forEach(input => {
+            if (input.value.trim() !== '') {
+                dayData.highlights.push(input.value);
+            }
+        });
+        
+        try {
+            // Save to Firebase - UI will update automatically via real-time listener
+            await saveDayToFirebase(dayData);
+            
+            // Close modal
+            closeEditDayModal();
+            
+            // Show success message
+            showSuccess('Day updated successfully!');
+            
+        } catch (error) {
+            console.error('Error saving day changes:', error);
+            showError(`Failed to save day: ${getErrorMessage(error)}`);
+        }
+    }
+    
+    async function deleteCurrentDay() {
+        if (!currentEditingDay) return;
+        
+        if (confirm('Are you sure you want to delete this day?')) {
+            try {
+                // Delete from Firebase - UI will update automatically via real-time listener
+                await deleteDayFromFirebase(currentEditingDay);
+                
+                // Close modal
+                closeEditDayModal();
+                
+                // Show success message
+                showSuccess('Day deleted successfully!');
+                
+            } catch (error) {
+                console.error('Error deleting day:', error);
+                showError(`Failed to delete day: ${getErrorMessage(error)}`);
+            }
+        }
+    }
+    
+    async function addNewDay() {
+        try {
+            // Calculate the next day ID
+            let dayCount = 1;
+            if (tripData.days && tripData.days.length > 0) {
+                // Get the highest existing day ID and add 1
+                const maxId = Math.max(...tripData.days.map(day => day.id));
+                dayCount = maxId + 1;
+            }
+            
+            const nextDate = new Date();
+            nextDate.setDate(nextDate.getDate() + dayCount - 1);
+            const formattedDate = formatDateForDisplay(nextDate.toISOString().split('T')[0]);
+            
+            const newDay = {
+                id: dayCount,
+                title: `Day ${dayCount}: New Adventure`,
+                location: "New Location",
+                date: formattedDate,
+                price: 100,
+                description: "Describe your new adventure day here.",
+                startTime: "9:00 AM",
+                endTime: "5:00 PM",
+                highlights: ["Add your first highlight"],
+                privacy: "public",
+                selected: false, // Default to not selected
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            
+            console.log('Adding new day:', newDay);
+            
+            // Save to Firebase - UI will update automatically via real-time listener
+            await saveDayToFirebase(newDay);
+            
+            // Open edit modal for the new day
+            openEditDayModal(dayCount);
+            
+            console.log('New day added successfully');
+            
+        } catch (error) {
+            console.error('Error adding new day:', error);
+            showError(`Failed to add new day: ${getErrorMessage(error)}`);
+        }
+    }
+
+    function saveTrip() {
+        // In a real application, this would send data to a server
+        showSuccess('Trip saved successfully!');
+    }
+    
+    function resetTrip() {
+        if (confirm('Are you sure you want to reset all changes?')) {
+            location.reload();
+        }
+    }
+    
+    async function clearTrip() {
+        if (confirm('Are you sure you want to clear the entire trip? This cannot be undone.')) {
+            try {
+                // Delete all days from Firebase - UI will update automatically via real-time listener
+                for (const day of tripData.days) {
+                    await deleteDayFromFirebase(day.id);
+                }
+                
+                showSuccess('Trip cleared successfully!');
+                
+            } catch (error) {
+                console.error('Error clearing trip:', error);
+                showError(`Failed to clear trip: ${getErrorMessage(error)}`);
+            }
+        }
+    }
+
+    // Utility functions
+    function dataURLToBlob(dataURL) {
+        const arr = dataURL.split(',');
+        const mime = arr[0].match(/:(.*?);/)[1];
+        const bstr = atob(arr[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new Blob([u8arr], { type: mime });
+    }
+
+    function sanitizeDatabaseKey(key) {
+        if (!key) return '';
+        return key.replace(/[.#$[\]]/g, '_');
+    }
+
+    function getErrorMessage(error) {
+        if (!error) return 'Unknown error occurred';
+        
+        if (error.code) {
+            switch (error.code) {
+                case 'storage/unauthorized':
+                    return 'Storage permission denied.';
+                case 'storage/canceled':
+                    return 'Upload canceled';
+                case 'storage/unknown':
+                    return 'Unknown storage error occurred';
+                case 'storage/invalid-argument':
+                    return 'Invalid file path or argument';
+                case 'storage/object-not-found':
+                    return 'File not found in storage';
+                case 'storage/quota-exceeded':
+                    return 'Storage quota exceeded';
+                case 'storage/unauthenticated':
+                    return 'User not authenticated';
+                default:
+                    return `Storage error: ${error.code}`;
+            }
+        }
+        
+        if (error.message) {
+            return error.message;
+        }
+        
+        if (typeof error === 'string') {
+            return error;
+        }
+        
+        return 'An unexpected error occurred. Please try again.';
+    }
+
+    function showError(message) {
+        errorMessage.textContent = message;
+        errorAlert.style.display = 'block';
+        
+        setTimeout(() => {
+            errorAlert.style.display = 'none';
+        }, 5000);
+    }
+
+    function showSuccess(message) {
+        successAlertMessage.textContent = message;
+        successAlert.style.display = 'block';
+        
+        setTimeout(() => {
+            successAlert.style.display = 'none';
+        }, 5000);
+    }
+
+    function showUploadProgress() {
+        uploadProgress.style.display = 'block';
+    }
+
+    function updateUploadProgress(percentage) {
+        uploadProgressBar.style.width = percentage + '%';
+        uploadProgressText.textContent = Math.round(percentage) + '%';
+    }
+
+    function hideUploadProgress() {
+        uploadProgress.style.display = 'none';
+    }
+
+    function convertTo24Hour(time12) {
+        if (!time12) return "09:00";
+        
+        const [time, modifier] = time12.split(' ');
+        let [hours, minutes] = time.split(':');
+        
+        if (hours === '12') {
+            hours = '00';
+        }
+        
+        if (modifier === 'PM') {
+            hours = parseInt(hours, 10) + 12;
+        }
+        
+        return `${hours}:${minutes}`;
+    }
+    
+    function convertTo12Hour(time24) {
+        if (!time24) return "9:00 AM";
+        
+        let [hours, minutes] = time24.split(':');
+        hours = parseInt(hours);
+        
+        const modifier = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12;
+        
+        return `${hours}:${minutes} ${modifier}`;
+    }
+    
+    function formatDateForInput(dateString) {
+        // Convert "June 15, 2023" to "2023-06-15"
+        const months = {
+            'January': '01', 'February': '02', 'March': '03', 'April': '04',
+            'May': '05', 'June': '06', 'July': '07', 'August': '08',
+            'September': '09', 'October': '10', 'November': '11', 'December': '12'
+        };
+        
+        const parts = dateString.split(' ');
+        const month = months[parts[0]];
+        const day = parts[1].replace(',', '');
+        const year = parts[2];
+        
+        return `${year}-${month}-${day.padStart(2, '0')}`;
+    }
+    
+    function formatDateForDisplay(dateString) {
+        // Convert "2023-06-15" to "June 15, 2023"
+        const date = new Date(dateString);
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return date.toLocaleDateString('en-US', options);
+    }
+
+    function formatDateForName(date) {
+        // Format date for auto-naming: "Jun15_2023_1425"
+        const month = date.toLocaleString('en-US', { month: 'short' });
+        const day = date.getDate().toString().padStart(2, '0');
+        const year = date.getFullYear();
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        
+        return `${month}${day}_${year}_${hours}${minutes}`;
+    }
+
+    // Clean up listeners when page unloads
+    window.addEventListener('beforeunload', function() {
+        if (tripDataListener) {
+            tripDataListener();
+        }
+        if (daysListener) {
+            daysListener();
+        }
+        if (headerPhotoListener) {
+            headerPhotoListener();
+        }
+    });
+</script>
 </body>
-
+</html>
+    
+  </body>
+  
 </html>
