@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adventure Trips Gallery</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #3498db;
+            --secondary: #2c3e50;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --public: #2ecc71;
+            --private: #e74c3c;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        /* Navbar Styles */
+        .navbar {
+            background: var(--secondary);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            color: var(--primary);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .nav-link.active {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        /* Mobile Menu */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            width: 100%;
+            background: var(--secondary);
+            padding: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 99;
+        }
+        
+        .mobile-menu.active {
+            display: block;
+        }
+        
+        .mobile-nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .mobile-nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.8rem 1rem;
+            border-radius: 5px;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .mobile-nav-link:hover, .mobile-nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--primary);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .hero h1 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero p {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+        }
+        
+        .search-bar {
+            display: flex;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 5px 0 0 5px;
+            font-size: 1rem;
+        }
+        
+        .search-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            padding: 0 18px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .search-btn:hover {
+            background: #c0392b;
+        }
+        
+        /* Filters */
+        .filters {
+            max-width: 1200px;
+            margin: 0 auto 1.5rem;
+            padding: 0 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .filter-label {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+        
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        /* Trips Grid */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px 30px;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--secondary);
+            text-align: center;
+            padding: 0 10px;
+        }
+        
+        .trips-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .trip-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        
+        .trip-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .image-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 100%; /* Creates square aspect ratio */
+            overflow: hidden;
+        }
+        
+        .trip-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .trip-card:hover .trip-image {
+            transform: scale(1.05);
+        }
+        
+        .trip-content {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .trip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+        
+        .trip-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 3px;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .trip-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent);
+            white-space: nowrap;
+            margin-left: 5px;
+        }
+        
+        .trip-location {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #666;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+        }
+        
+        .trip-description {
+            color: #666;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+        
+        .trip-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .meta-icon {
+            font-size: 1rem;
+            color: var(--primary);
+            margin-bottom: 3px;
+        }
+        
+        .meta-label {
+            font-size: 0.7rem;
+            color: #999;
+        }
+        
+        .meta-value {
+            font-weight: 600;
+            font-size: 0.8rem;
+            margin-top: 2px;
+        }
+        
+        .trip-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+        
+        .trip-days {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        
+        .day-badge {
+            background: var(--light);
+            color: var(--dark);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .day-badge.selected {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .privacy-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+        
+        .privacy-badge.public {
+            background-color: rgba(46, 204, 113, 0.15);
+            color: var(--public);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+        
+        .privacy-badge.private {
+            background-color: rgba(231, 76, 60, 0.15);
+            color: var(--private);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+        }
+        
+        .trip-tag {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--accent);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            z-index: 2;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: #666;
+            grid-column: 1 / -1;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #ddd;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+        }
+        
+        .empty-state p {
+            font-size: 0.9rem;
+        }
+        
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 2rem 1rem;
+            grid-column: 1 / -1;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--secondary);
+            color: white;
+            padding: 2.5rem 0;
+            margin-top: 2rem;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .footer-section h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+            color: var(--primary);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.4rem;
+        }
+        
+        .footer-links a {
+            color: #ddd;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 12px;
+            margin-top: 0.8rem;
+        }
+        
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 35px;
+            height: 35px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            transition: background 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .social-link:hover {
+            background: var(--primary);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 1.5rem;
+            margin-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #aaa;
+            font-size: 0.8rem;
+        }
+        
+        /* Responsive Design */
+        @media (min-width: 768px) {
+            .trips-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+            
+            .trip-content {
+                padding: 18px;
+            }
+            
+            .trip-title {
+                font-size: 1.1rem;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .trips-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 25px;
+            }
+            
+            .trip-content {
+                padding: 20px;
+            }
+            
+            .trip-title {
+                font-size: 1.2rem;
+            }
+            
+            .hero h1 {
+                font-size: 3rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .hero {
+                padding: 2rem 0;
+            }
+            
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .filters {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .filter-group {
+                width: 100%;
+            }
+            
+            .filter-select {
+                flex-grow: 1;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .trip-footer {
+                flex-direction: column;
+                gap: 8px;
+                align-items: flex-start;
+            }
+            
+            .trip-days {
+                width: 100%;
+                justify-content: flex-start;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .trips-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-mountain"></i>
+                <span>AdventureTrips</span>
+            </div>
+            <div class="nav-links">
+                <a href="#" class="nav-link active"><i class="fas fa-home"></i> Home</a>
+                <a href="#" class="nav-link"><i class="fas fa-compass"></i> Discover</a>
+                <a href="#" class="nav-link"><i class="fas fa-heart"></i> Favorites</a>
+                <a href="#" class="nav-link"><i class="fas fa-user"></i> Profile</a>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-nav-links">
+            <a href="#" class="mobile-nav-link active"><i class="fas fa-home"></i> Home</a>
+            <a href="#" class="mobile-nav-link"><i class="fas fa-compass"></i> Discover</a>
+            <a href="#" class="mobile-nav-link"><i class="fas fa-heart"></i> Favorites</a>
+            <a href="#" class="mobile-nav-link"><i class="fas fa-user"></i> Profile</a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Discover Amazing Adventures</h1>
+            <p>Explore breathtaking trips curated by adventure enthusiasts around the world</p>
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="Search for destinations, activities...">
+                <button class="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters -->
+    <div class="filters">
+        <div class="filter-group">
+            <span class="filter-label">Filter by:</span>
+            <select class="filter-select" id="locationFilter">
+                <option value="">All Locations</option>
+                <option value="mountain">Mountains</option>
+                <option value="beach">Beaches</option>
+                <option value="forest">Forests</option>
+                <option value="city">Cities</option>
+            </select>
+            <select class="filter-select" id="durationFilter">
+                <option value="">Any Duration</option>
+                <option value="1">1 Day</option>
+                <option value="3">3 Days</option>
+                <option value="5">5 Days</option>
+                <option value="7">7+ Days</option>
+            </select>
+            <select class="filter-select" id="difficultyFilter">
+                <option value="">Any Difficulty</option>
+                <option value="Easy">Easy</option>
+                <option value="Moderate">Moderate</option>
+                <option value="Challenging">Challenging</option>
+                <option value="Difficult">Difficult</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Trips Grid -->
+    <div class="container">
+        <h2 class="section-title">Featured Trips</h2>
+        
+        <div class="loading" id="loadingState">
+            <div class="spinner"></div>
+            <p>Loading amazing trips...</p>
+        </div>
+        
+        <div class="trips-grid" id="tripsGrid">
+            <!-- Trip cards will be dynamically inserted here -->
+        </div>
+        
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <i class="fas fa-map-marked-alt"></i>
+            <h3>No trips found</h3>
+            <p>Try adjusting your filters or check back later for new adventures.</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>AdventureTrips</h3>
+                <p>Discover and share amazing adventure experiences from around the world.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-pinterest"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Discover</a></li>
+                    <li><a href="#">Create Trip</a></li>
+                    <li><a href="#">About Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <ul class="footer-links">
+                    <li><i class="fas fa-envelope"></i> info@adventuretips.com</li>
+                    <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
+                    <li><i class="fas fa-map-marker-alt"></i> 123 Adventure St, Explore City</li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2023 AdventureTrips. All rights reserved.
+        </div>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getDatabase, ref, get, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBDrzrgLslaJvnXbo1e90irCEtdcm9ZsCU",
+            authDomain: "logins-13661.firebaseapp.com",
+            databaseURL: "https://logins-13661-default-rtdb.firebaseio.com",
+            projectId: "logins-13661",
+            storageBucket: "logins-13661.appspot.com",
+            messagingSenderId: "451535349483",
+            appId: "1:451535349483:web:d3c9867fd2bffbbdca40ae",
+            measurementId: "G-DWP16WX2H7"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // DOM Elements
+        const tripsGrid = document.getElementById('tripsGrid');
+        const loadingState = document.getElementById('loadingState');
+        const emptyState = document.getElementById('emptyState');
+        const searchInput = document.querySelector('.search-input');
+        const locationFilter = document.getElementById('locationFilter');
+        const durationFilter = document.getElementById('durationFilter');
+        const difficultyFilter = document.getElementById('difficultyFilter');
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const navLinks = document.querySelector('.nav-links');
+
+        // State
+        let allTrips = [];
+        let filteredTrips = [];
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTripsFromFirebase();
+            setupEventListeners();
+        });
+
+        // Load trips from Firebase
+        async function loadTripsFromFirebase() {
+            try {
+                // Show loading state
+                loadingState.style.display = 'block';
+                tripsGrid.innerHTML = '';
+                emptyState.style.display = 'none';
+
+                // Get all pages from Firebase
+                const pagesRef = ref(database, 'pages');
+                const pagesSnapshot = await get(pagesRef);
+                
+                if (!pagesSnapshot.exists()) {
+                    console.log('No pages found in Firebase');
+                    showEmptyState();
+                    return;
+                }
+
+                const pagesData = pagesSnapshot.val();
+                allTrips = [];
+
+                // Iterate through all pages and extract trips
+                for (const [pageId, pageData] of Object.entries(pagesData)) {
+                    if (pageData.trips) {
+                        for (const [tripId, tripData] of Object.entries(pageData.trips)) {
+                            // Only include active trips
+                            if (tripData.status !== 'inactive') {
+                                const processedTrip = await processTripData(tripData, tripId, pageId);
+                                allTrips.push(processedTrip);
+                            }
+                        }
+                    }
+                }
+
+                // Sort trips by creation date (newest first)
+                allTrips.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                
+                filteredTrips = [...allTrips];
+                renderTrips();
+                
+            } catch (error) {
+                console.error('Error loading trips from Firebase:', error);
+                showErrorState();
+            }
+        }
+
+        // Process trip data from Firebase structure
+        async function processTripData(tripData, tripId, pageId) {
+            // Extract location from days
+            let location = "Multiple Locations";
+            let locationType = "mixed";
+            
+            if (tripData.days) {
+                const days = Object.values(tripData.days);
+                if (days.length > 0) {
+                    // Use location from first day as primary location
+                    location = days[0].location || "Various Locations";
+                    
+                    // Determine location type based on location name
+                    const loc = location.toLowerCase();
+                    if (loc.includes('mountain') || loc.includes('peak') || loc.includes('alps')) {
+                        locationType = "mountain";
+                    } else if (loc.includes('beach') || loc.includes('coast') || loc.includes('ocean')) {
+                        locationType = "beach";
+                    } else if (loc.includes('forest') || loc.includes('wood') || loc.includes('jungle')) {
+                        locationType = "forest";
+                    } else if (loc.includes('city') || loc.includes('tokyo') || loc.includes('new york')) {
+                        locationType = "city";
+                    }
+                }
+            }
+
+            // Calculate total price and get selected days
+            let totalPrice = 0;
+            let selectedDays = [];
+            
+            if (tripData.days) {
+                const days = Object.values(tripData.days);
+                days.forEach(day => {
+                    totalPrice += day.price || 0;
+                    if (day.selected) {
+                        selectedDays.push(day.id);
+                    }
+                });
+            }
+
+            // Get header photo URL
+            let headerPhotoUrl = "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80";
+            
+            if (tripData.photos && tripData.photos.header && tripData.photos.header.imageUrl) {
+                headerPhotoUrl = tripData.photos.header.imageUrl;
+            } else if (tripData.headerPhotoUrl) {
+                headerPhotoUrl = tripData.headerPhotoUrl;
+            }
+
+            // Parse duration to get number of days
+            let duration = 1;
+            if (tripData.duration) {
+                const durationMatch = tripData.duration.match(/\d+/);
+                if (durationMatch) {
+                    duration = parseInt(durationMatch[0]);
+                }
+            }
+
+            // Determine if trip is featured (for demo purposes)
+            const isFeatured = Math.random() > 0.7;
+
+            return {
+                id: tripId,
+                pageId: pageId,
+                title: tripData.title || "Untitled Trip",
+                subtitle: tripData.subtitle || "",
+                description: tripData.subtitle || "An amazing adventure awaits!",
+                location: location,
+                locationType: locationType,
+                image: headerPhotoUrl,
+                price: totalPrice,
+                duration: duration,
+                difficulty: tripData.difficulty || "Moderate",
+                groupSize: tripData.groupSize || "Up to 12 People",
+                privacy: tripData.privacy || "public",
+                selectedDays: selectedDays,
+                createdAt: tripData.createdAt || new Date().toISOString(),
+                updatedAt: tripData.updatedAt || new Date().toISOString(),
+                createdBy: tripData.createdBy || "unknown",
+                status: tripData.status || "active",
+                days: tripData.days ? Object.values(tripData.days) : [],
+                isFeatured: isFeatured
+            };
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Search functionality
+            searchInput.addEventListener('input', filterTrips);
+            
+            // Filter functionality
+            locationFilter.addEventListener('change', filterTrips);
+            durationFilter.addEventListener('change', filterTrips);
+            difficultyFilter.addEventListener('change', filterTrips);
+            
+            // Mobile menu toggle
+            mobileMenuBtn.addEventListener('click', function() {
+                mobileMenu.classList.toggle('active');
+            });
+            
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                    mobileMenu.classList.remove('active');
+                }
+            });
+        }
+
+        // Filter trips based on search and filters
+        function filterTrips() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const locationValue = locationFilter.value;
+            const durationValue = durationFilter.value;
+            const difficultyValue = difficultyFilter.value;
+            
+            filteredTrips = allTrips.filter(trip => {
+                // Search filter
+                const matchesSearch = 
+                    trip.title.toLowerCase().includes(searchTerm) ||
+                    trip.description.toLowerCase().includes(searchTerm) ||
+                    trip.location.toLowerCase().includes(searchTerm);
+                
+                // Location filter
+                const matchesLocation = !locationValue || 
+                    trip.locationType === locationValue;
+                
+                // Duration filter
+                let matchesDuration = true;
+                if (durationValue) {
+                    const durationNum = parseInt(durationValue);
+                    if (durationNum === 7) {
+                        matchesDuration = trip.duration >= 7;
+                    } else {
+                        matchesDuration = trip.duration === durationNum;
+                    }
+                }
+                
+                // Difficulty filter
+                const matchesDifficulty = !difficultyValue || 
+                    trip.difficulty === difficultyValue;
+                
+                return matchesSearch && matchesLocation && matchesDuration && matchesDifficulty;
+            });
+            
+            renderTrips();
+        }
+
+        // Render trips to the grid
+        function renderTrips() {
+            tripsGrid.innerHTML = '';
+            
+            if (filteredTrips.length === 0) {
+                loadingState.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            filteredTrips.forEach(trip => {
+                const tripCard = createTripCard(trip);
+                tripsGrid.appendChild(tripCard);
+            });
+            
+            loadingState.style.display = 'none';
+        }
+
+        // Create a trip card element
+        function createTripCard(trip) {
+            const card = document.createElement('div');
+            card.className = 'trip-card';
+            
+            // Create privacy badge
+            const privacyBadge = trip.privacy === 'private' ? 
+                `<span class="privacy-badge private"><i class="fas fa-lock"></i> Private</span>` : 
+                `<span class="privacy-badge public"><i class="fas fa-globe"></i> Public</span>`;
+            
+            // Create day badges (show max 3 days on mobile)
+            let dayBadges = '';
+            const maxDaysToShow = window.innerWidth < 768 ? 3 : trip.duration;
+            for (let i = 1; i <= Math.min(trip.duration, maxDaysToShow); i++) {
+                const isSelected = trip.selectedDays && trip.selectedDays.includes(i);
+                dayBadges += `<div class="day-badge ${isSelected ? 'selected' : ''}">Day ${i}</div>`;
+            }
+            
+            // Add ellipsis if there are more days
+            if (trip.duration > maxDaysToShow) {
+                dayBadges += `<div class="day-badge">+${trip.duration - maxDaysToShow}</div>`;
+            }
+            
+            // Featured tag
+            const featuredTag = trip.isFeatured ? '<div class="trip-tag">Featured</div>' : '';
+            
+            card.innerHTML = `
+                <div class="image-container">
+                    <img src="${trip.image}" alt="${trip.title}" class="trip-image">
+                    ${featuredTag}
+                </div>
+                <div class="trip-content">
+                    <div class="trip-header">
+                        <div style="flex: 1; min-width: 0;">
+                            <h3 class="trip-title">${trip.title} ${privacyBadge}</h3>
+                        </div>
+                        <div class="trip-price">$${trip.price}</div>
+                    </div>
+                    <div class="trip-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>${trip.location}</span>
+                    </div>
+                    <p class="trip-description">${trip.subtitle || trip.description}</p>
+                    <div class="trip-meta">
+                        <div class="meta-item">
+                            <div class="meta-icon"><i class="fas fa-calendar"></i></div>
+                            <div class="meta-label">Duration</div>
+                            <div class="meta-value">${trip.duration}d</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-icon"><i class="fas fa-mountain"></i></div>
+                            <div class="meta-label">Difficulty</div>
+                            <div class="meta-value">${trip.difficulty}</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-icon"><i class="fas fa-users"></i></div>
+                            <div class="meta-label">Group</div>
+                            <div class="meta-value">${trip.groupSize.split(' ')[0]}</div>
+                        </div>
+                    </div>
+                    <div class="trip-footer">
+                        <div class="trip-days">
+                            ${dayBadges}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add click event to entire card - navigates to trip details
+            card.addEventListener('click', function() {
+                window.location.href = `viewtrip.html?pageID=${trip.pageId}&tripID=${trip.id}`;
+            });
+            
+            return card;
+        }
+
+        // Show empty state
+        function showEmptyState() {
+            loadingState.style.display = 'none';
+            emptyState.style.display = 'block';
+        }
+
+        // Show error state
+        function showErrorState() {
+            loadingState.style.display = 'none';
+            emptyState.innerHTML = `
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Error Loading Trips</h3>
+                <p>There was a problem loading the trips. Please try again later.</p>
+                <button class="view-trip-btn" style="margin-top: 1rem;" onclick="location.reload()">
+                    <i class="fas fa-redo"></i> Retry
+                </button>
+            `;
+            emptyState.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
